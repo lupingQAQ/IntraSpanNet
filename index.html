@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GDNet - naming security products from the first five packets of a flow</title>
+<meta name="description" content="GDNet identifies 18 security products and services from the first five packets of a network flow, rejects unknown products with a calibrated prototype distance, and reports an exact byte-level audit of six public traffic benchmarks.">
+<meta property="og:title" content="GDNet - naming security products from network traffic">
+<meta property="og:description" content="Byte-level classifier, 2.86M parameters per arm, 0.8787 product accuracy on a 503-flow test split, explicit unknown class. Open weights, Apache-2.0.">
+<meta property="og:type" content="article">
+<style>
+  :root {
+    --ink: #14181d;
+    --muted: #5b6673;
+    --line: #e2e6ea;
+    --accent: #1f5f8b;
+    --bg: #ffffff;
+    --soft: #f6f8fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 22px 80px; }
+  h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 26px; }
+  h2 { font-size: 1.05rem; margin: 40px 0 12px; letter-spacing: 0.01em; }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(31,95,139,.25); }
+  a:hover { border-bottom-color: var(--accent); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
+  .btn {
+    display: inline-block; padding: 9px 14px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--soft); color: var(--ink); border-bottom: 1px solid var(--line);
+    font-size: .93rem;
+  }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 18px 0 6px; }
+  .stat { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: var(--soft); }
+  .stat b { display: block; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; }
+  .stat span { color: var(--muted); font-size: .85rem; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 6px; font-size: .92rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: .86rem; }
+  pre code { background: none; padding: 0; }
+  .note { border-left: 3px solid var(--line); padding: 2px 0 2px 14px; color: var(--muted); font-size: .93rem; }
+  footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .86rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>GDNet: naming security products from the first five packets of a flow</h1>
+  <p class="sub">Byte-level classifier, 2.86M parameters per arm, explicit unknown class, open weights.</p>
+
+  <div class="links">
+    <a class="btn primary" href="https://github.com/lupingQAQ/gdnet/blob/main/paper/GDNet.pdf">Read the paper (PDF)</a>
+    <a class="btn" href="https://github.com/lupingQAQ/gdnet">Code</a>
+    <a class="btn" href="https://huggingface.co/luping123/gdnet">Weights</a>
+    <a class="btn" href="https://github.com/lupingQAQ/gdnet/releases/tag/v0.1.0">Release v0.1.0</a>
+  </div>
+
+  <h2>What it does</h2>
+  <p>Asset inventories list what was installed; traffic shows what is running. GDNet reads the first five packets of a flow, zeroes the IPv4 addresses, and assigns the flow to one of 18 security products and services, or returns <code>unknown</code> when the prototype distance exceeds a calibrated threshold.</p>
+  <p>The label set covers antivirus agents, endpoint detection and response, VPN endpoints, a web application firewall, an NDR sensor, a bastion host, an internet behaviour management proxy, a browser, and remote administration. Ports and protocol rules do not separate these classes.</p>
+
+  <div class="grid">
+    <div class="stat"><b>0.8787</b><span>product accuracy, 503-flow test split</span></div>
+    <div class="stat"><b>0.9245</b><span>tier accuracy</span></div>
+    <div class="stat"><b>0.9784</b><span>gate AUROC</span></div>
+    <div class="stat"><b>18/18</b><span>unknown-product bins rejected</span></div>
+  </div>
+
+  <h2>The part that matters more</h2>
+  <p>While building it, every flow in six public traffic benchmarks was hashed twice, over the PNG bytes and over the decoded pixels. Five of the six share roughly 80% of their test flows with their training splits, byte for byte. ISCXTor2016 shares none.</p>
+
+  <table>
+    <thead><tr><th>Benchmark</th><th class="num">Test</th><th class="num">In train</th><th class="num">Share</th><th class="num">Clean</th></tr></thead>
+    <tbody>
+      <tr><td>ISCXVPN2016</td><td class="num">1,384</td><td class="num">1,106</td><td class="num">79.9%</td><td class="num">278</td></tr>
+      <tr><td>ISCXTor2016</td><td class="num">1,458</td><td class="num">0</td><td class="num">0%</td><td class="num">1,458</td></tr>
+      <tr><td>USTC-TFC2016</td><td class="num">6,662</td><td class="num">5,605</td><td class="num">84.1%</td><td class="num">1,057</td></tr>
+      <tr><td>CICIoT2022</td><td class="num">1,951</td><td class="num">1,571</td><td class="num">80.5%</td><td class="num">380</td></tr>
+      <tr><td>CrossPlatform-Android</td><td class="num">4,656</td><td class="num">3,733</td><td class="num">80.2%</td><td class="num">923</td></tr>
+      <tr><td>CrossPlatform-iOS</td><td class="num">4,205</td><td class="num">3,396</td><td class="num">80.8%</td><td class="num">809</td></tr>
+    </tbody>
+  </table>
+  <p class="note">250,072 flows audited. Re-scoring the model on the clean subsets costs 4.4 points of macro-F1 on VPN, 2.8 on USTC and 1.4 on CIoT. Both numbers are reported.</p>
+
+  <h2>Install and run</h2>
+<pre><code>git clone https://github.com/lupingQAQ/gdnet
+cd gdnet
+pip install -r requirements.txt
+
+python -m gdnet.cli classify --pcap capture.pcapng --weights weights
+python -m gdnet.cli serve --weights weights --port 8080</code></pre>
+  <p>Inference needs a CUDA device. The Gated DeltaNet backbone uses Triton kernels, so there is no CPU path, and that is a deliberate decision rather than an omission.</p>
+
+  <h2>Limits, stated up front</h2>
+  <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. The audit detects exact duplicates only, not near-duplicates or label errors. Training code is not released; checkpoints, prototypes, threshold and the evaluation script are.</p>
+
+  <h2>Cite</h2>
+<pre><code>@misc{gdnet2026,
+  title  = {GDNet: Naming Security Products from the First Five Packets of a Flow},
+  author = {Luping QAQ},
+  year   = {2026},
+  note   = {https://github.com/lupingQAQ/gdnet},
+  url    = {https://github.com/lupingQAQ/gdnet}
+}</code></pre>
+
+  <footer>
+    Code and weights under Apache-2.0. Documentation under CC-BY-4.0. No capture, customer trace or internal path is redistributed.
+  </footer>
+</div>
+</body>
+</html>
