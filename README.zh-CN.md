@@ -1,11 +1,11 @@
-# GDNet V5
+# GDNet
 
 面向安全产品发现的字节级流量分类模型。
 
 GDNet 从一条流的前 5 个包识别安全产品与服务，输出产品、类型、大类，并对不在已知类别中的流量给出未知告警。发布版本为四臂集成，单臂 2.86M 参数。
 
-- 模型：[Hugging Face 上的 gdnet-v5](https://huggingface.co/luping123/gdnet-v5)
-- 论文：[PDF](paper/GDNet-V5.pdf)
+- 模型：[Hugging Face 上的 gdnet](https://huggingface.co/luping123/gdnet)
+- 论文：[PDF](paper/gdnet.pdf)
 - 演示：暂未部署。Space 代码在 `space/`，需要 CUDA GPU。
 - 技术报告：[docs/RESULTS.md](docs/RESULTS.md)
 - 基准审计：[docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
@@ -58,7 +58,7 @@ test 集为验证集的流级半折，不是会话级留出。每个产品类只
 - 与 CUDA 版本匹配的 PyTorch。
 - `flash-linear-attention` 及其依赖。
 
-v1.0.0 不支持 CPU 推理。GDN 骨干使用 Triton 内核，必须使用 CUDA。
+v0.1.0 不支持 CPU 推理。GDN 骨干使用 Triton 内核，必须使用 CUDA。
 
 ```bash
 git clone https://github.com/lupingQAQ/gdnet.git
@@ -71,7 +71,7 @@ pip install -e .
 下载权重：
 
 ```bash
-huggingface-cli download luping123/gdnet-v5 --local-dir weights/gdnet-v5
+huggingface-cli download luping123/gdnet --local-dir weights/gdnet
 ```
 
 分类一个抓包文件：
@@ -79,7 +79,7 @@ huggingface-cli download luping123/gdnet-v5 --local-dir weights/gdnet-v5
 ```bash
 python -m gdnet.cli classify \
   --pcap sample.pcap \
-  --weights-dir weights/gdnet-v5 \
+  --weights-dir weights/gdnet \
   --json results.json
 ```
 
@@ -88,7 +88,7 @@ python -m gdnet.cli classify \
 服务模式：
 
 ```bash
-python -m gdnet.cli serve --weights-dir weights/gdnet-v5 --port 9012
+python -m gdnet.cli serve --weights-dir weights/gdnet --port 9012
 ```
 
 服务接收 `POST /`，请求体为一个或多个 1620 字节的 `FLW1` 记录，返回 JSON 数组。
@@ -131,7 +131,7 @@ bytes (1600)
 
 训练数据来自 18 个产品与服务的实验环境抓包，以及公开基准训练 split。SSL 池不含验证集与留出集。验证集按流级拆分为 dev 与 test，选择、阈值校准与集成选择仅使用 dev。
 
-训练使用 4 张 RTX 4090。发布 checkpoint 为 V5 最终六臂。
+训练使用 4 张 RTX 4090。发布 checkpoint 为 最终六臂。
 
 ## 评测协议
 
@@ -147,7 +147,7 @@ bytes (1600)
 
 - `stunnel` 是验收中唯一零召回的产品（0/30），需要注册或补充数据。
 - test 为流级拆分，不是会话级拆分。每类只有 1 个留出会话，会话级泛化未测量。
-- 9/10 验收结果中的时序救援规则未包含在 v1.0.0。发布集成单独复现的是 8/10。
+- 9/10 验收结果中的时序救援规则未包含在 v0.1.0。发布集成单独复现的是 8/10。
 - 移动端与 IoT 基准不在目标范围内。目标范围为 PC、服务器与内网设备。
 - 模型在实验环境流量上训练。生产网络中软件版本、代理、NAT 配置不同，效果未知。
 - 不支持 CPU 推理。
@@ -165,10 +165,10 @@ bytes (1600)
 
 ```bibtex
 @software{gdnet2026,
-  title  = {GDNet V5: Byte-level traffic classification for security product discovery},
+  title  = {GDNet: Byte-level traffic classification for security product discovery},
   year   = {2026},
   url    = {https://github.com/lupingQAQ/gdnet},
-  note   = {Model: https://huggingface.co/luping123/gdnet-v5}
+  note   = {Model: https://huggingface.co/luping123/gdnet}
 }
 ```
 

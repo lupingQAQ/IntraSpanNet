@@ -4,7 +4,7 @@ For the dated schedule, see [LAUNCH_7DAY.md](LAUNCH_7DAY.md).
 
 ## Positioning
 
-One sentence: GDNet V5 identifies 18 security products and services from the first five packets of a flow, rejects unknown products, and ships with an audit of the public benchmark splits used for comparison.
+One sentence: GDNet identifies 18 security products and services from the first five packets of a flow, rejects unknown products, and ships with an audit of the public benchmark splits used for comparison.
 
 Do not call it state of the art. Do not call it a replacement for an IDS. The strongest public angle is the split audit and the reproducible, small model. The strongest technical angle is the open-set path and the deployment constraints.
 
@@ -13,11 +13,11 @@ Do not call it state of the art. Do not call it a replacement for an IDS. The st
 | Asset | Path | Status |
 |---|---|---|
 | Code repository | `gdnet/` | Ready |
-| Weights | `weights/gdnet-v5/` | Ready, 94.6 MB |
+| Weights | `weights/gdnet/` | Ready, 94.6 MB |
 | Model card | `gdnet/docs/MODEL_CARD.md` | Ready |
 | Results | `gdnet/docs/RESULTS.md` | Ready |
 | Benchmark audit | `gdnet/docs/BENCHMARK_AUDIT.md` | Ready |
-| Release notes | `gdnet/docs/RELEASE_NOTES_v1.0.0.md` | Ready |
+| Release notes | `gdnet/docs/RELEASE_NOTES_v0.1.0.md` | Ready |
 | Blog, English | `gdnet/docs/blog-en.md` | Ready |
 | Blog, Chinese | `gdnet/docs/blog-zh.md` | Ready |
 | Social copy | `gdnet/docs/social-posts.md` | Ready |
@@ -33,12 +33,12 @@ python scripts/set_accounts.py --github your-github --hf your-hf
 ```
 
 2. Create the GitHub repository `gdnet`. Do not initialize it with a README.
-3. Create the Hugging Face model repository `gdnet-v5`.
+3. Create the Hugging Face model repository `gdnet`.
 4. Create the Space `gdnet-demo` and select a GPU hardware tier. The free CPU tier cannot run the model.
 5. Verify the weights checksums:
 
 ```bash
-cd weights/gdnet-v5
+cd weights/gdnet
 sha256sum -c SHA256SUMS
 ```
 
@@ -58,11 +58,11 @@ cd gdnet
 git init -b main
 git add -A
 git status --short
-git commit -m "release: GDNet V5 v1.0.0"
+git commit -m "release: GDNet v0.1.0"
 git remote add origin git@github.com:lupingQAQ/gdnet.git
 git push -u origin main
-git tag -a v1.0.0 -m "GDNet V5 v1.0.0"
-git push origin v1.0.0
+git tag -a v0.1.0 -m "GDNet v0.1.0"
+git push origin v0.1.0
 ```
 
 Check the staged file list before committing. The repository must not contain weights, captures, logs, or the `weights/` directory.
@@ -71,7 +71,7 @@ Check the staged file list before committing. The repository must not contain we
 
 ```bash
 huggingface-cli login
-huggingface-cli upload luping123/gdnet-v5 weights/gdnet-v5 . --repo-type model
+huggingface-cli upload luping123/gdnet weights/gdnet . --repo-type model
 ```
 
 Upload the model card as `README.md` in the model repository. The card is `gdnet/docs/MODEL_CARD.md`; rename it on upload or keep both and link them.
@@ -79,7 +79,7 @@ Upload the model card as `README.md` in the model repository. The card is `gdnet
 ## Publish the Space
 
 ```bash
-python scripts/build_space.py --weights weights/gdnet-v5
+python scripts/build_space.py --weights weights/gdnet
 huggingface-cli upload luping123/gdnet-demo space . --repo-type space
 ```
 
@@ -89,7 +89,7 @@ The Space needs a GPU. If the account does not have GPU credits, do not publish 
 
 Day 0:
 
-- GitHub release v1.0.0 with the weights zip and `SHA256SUMS`.
+- GitHub release v0.1.0 with the weights zip and `SHA256SUMS`.
 - Hugging Face model repository with the model card.
 - Short post on X and LinkedIn.
 - Post the English blog.
@@ -118,7 +118,7 @@ Use the drafts in `social-posts.md`. Keep the first sentence factual. Put the li
 | "The benchmark splits are leaked." | We disclose it. Five of six splits have about 80% overlap; Tor is 0%. All comparisons are same-protocol. The deduplicated results are in the report. |
 | "The test set is small." | Yes, 503 flows, flow-level split, one held-out session per class. We do not claim session-level generalization. |
 | "stunnel fails." | Yes, 0/30. It needs enrollment or new data. This is in the README and the model card. |
-| "No CPU support." | Correct. The GDN backbone uses Triton kernels. GPU-only is a deliberate scope decision for v1.0.0. |
+| "No CPU support." | Correct. The GDN backbone uses Triton kernels. GPU-only is a deliberate scope decision for v0.1.0. |
 | "This is not SOTA." | We do not claim SOTA. The release is a small, reproducible model with an open-set path and a split audit. |
 | "Weights are not reproducible without the data." | The checkpoints, prototypes, threshold, and evaluation script are released. The lab capture split is not redistributed. |
 

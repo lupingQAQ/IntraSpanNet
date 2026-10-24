@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.0.0 - 2026-10-24
+## 0.1.0 - 2026-10-24
 
 Initial release.
 
-- Four-arm V5 ensemble for 18 security products and services.
+- Four-arm ensemble for 18 security products and services.
 - Open-set rejection with a calibrated prototype-distance threshold.
 - Portable inference package, CLI, and HTTP service for FLW1 records.
 - pcap/pcapng preprocessing with IPv4 masking.

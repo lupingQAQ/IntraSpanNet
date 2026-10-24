@@ -11,13 +11,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gdnet.inference import Ensemble
 from gdnet.preprocess import flow_vectors_from_pcap
 
-WEIGHTS_DIR = os.environ.get("GDNET_WEIGHTS", os.path.join(os.path.dirname(__file__), "gdnet-v5"))
-MODEL_REPO = os.environ.get("GDNET_MODEL", "your-org/gdnet-v5")
+WEIGHTS_DIR = os.environ.get("GDNET_WEIGHTS", os.path.join(os.path.dirname(__file__), "gdnet"))
+MODEL_REPO = os.environ.get("GDNET_MODEL", "your-org/gdnet")
 _ENGINE = None
 
 
 def _ensure_weights():
-    if os.path.exists(os.path.join(WEIGHTS_DIR, "stage3_v5_b_s0.pth")):
+    if os.path.exists(os.path.join(WEIGHTS_DIR, "stage3_b_s0.pth")):
         return
     try:
         from huggingface_hub import snapshot_download
@@ -69,9 +69,9 @@ def classify(file_path):
     return table, json.dumps(summary, ensure_ascii=False, indent=2), json.dumps(rows[:50], ensure_ascii=False, indent=2)
 
 
-with gr.Blocks(title="GDNet V5") as demo:
+with gr.Blocks(title="GDNet") as demo:
     gr.Markdown(
-        "# GDNet V5\n"
+        "# GDNet\n"
         "Byte-level traffic classification for security product discovery. "
         "The model identifies 18 security products and services, and rejects unknown products.\n\n"
         "The demo processes the first five packets of each unidirectional flow. "
@@ -90,7 +90,7 @@ with gr.Blocks(title="GDNet V5") as demo:
 
     gr.Markdown(
         "Hardware: NVIDIA GPU with CUDA. The GDN backbone uses Triton kernels. "
-        "CPU execution is not supported in v1.0.0. "
+        "CPU execution is not supported in v0.1.0. "
         "Metrics and limitations: see the model card."
     )
 

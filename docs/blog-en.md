@@ -64,7 +64,7 @@ The acceptance demo contains 264 product bins. The raw ensemble accepts 8 of 10 
 
 ## What is in the release
 
-- Four-arm V5 ensemble and prototype matrices.
+- Four-arm ensemble and prototype matrices.
 - Portable inference package with pcap/pcapng preprocessing.
 - CLI and HTTP service for the 1620-byte FLW1 record format.
 - Evaluation and split-audit scripts.

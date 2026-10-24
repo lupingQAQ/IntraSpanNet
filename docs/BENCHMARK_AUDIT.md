@@ -52,5 +52,5 @@ The Lens official Hugging Face splits are cleaner. Train/test burst overlap is 7
 
 - Trustee: Jacobs et al., "AI/ML for Network Security: The Emperor Has No Clothes", CCS 2022.
 - Pcap-Encoder: Zhao et al., "The Sweet Danger of Sugar", SIGCOMM 2025, arXiv:2507.16438.
-- netFound v5: arXiv:2310.17025v5, section 2.2 and section 5.2.
+- netFound (2026 revision): arXiv:2310.17025, section 2.2 and section 5.2.
 - NetBench: FMSys 2024.

@@ -1,7 +1,7 @@
-# GDNet V5 technical report
+# GDNet technical report
 
-- `GDNet-V5.md`: Markdown source.
-- `GDNet-V5.pdf`: rendered A4 PDF, 9 pages.
+- `gdnet.md`: Markdown source.
+- `gdnet.pdf`: rendered A4 PDF, 9 pages.
 - `style.css`: print stylesheet.
 - `assets/`: architecture and benchmark figures.
 

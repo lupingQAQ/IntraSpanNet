@@ -1,4 +1,4 @@
-# GDNet V5 results
+# GDNet results
 
 This document summarizes the evaluation protocol and the released numbers. It is self-contained; the internal experiment log is not part of the release.
 
@@ -39,7 +39,7 @@ The test-half macro-F1 is pulled down by classes with one or two test flows (`wi
 - Stable operating range: q=0.64 to q=0.75.
 - Gate AUROC: 0.9784 on test, 0.9820 on dev.
 
-The acceptance demo uses 264 product bins. The raw ensemble accepts 8 of 10 products. A timing-rescue rule raises this to 9 of 10. The timing rule is not part of v1.0.0, so the released model reproduces the 8/10 result.
+The acceptance demo uses 264 product bins. The raw ensemble accepts 8 of 10 products. A timing-rescue rule raises this to 9 of 10. The timing rule is not part of v0.1.0, so the released model reproduces the 8/10 result.
 
 `stunnel` is the only product with zero recall (0/30) in the acceptance demo. `wireguard` has two bins and is treated as sample noise.
 

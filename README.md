@@ -1,11 +1,11 @@
-# GDNet V5
+# GDNet
 
 Byte-level traffic classification for security product discovery.
 
 GDNet identifies security products and services from the first five packets of a network flow. It reports the product, its type and tier, and rejects flows that do not match any known product. The released model is a four-arm ensemble with 2.86M parameters per arm.
 
-- Model: [gdnet-v5 on Hugging Face](https://huggingface.co/luping123/gdnet-v5)
-- Paper: [PDF](paper/GDNet-V5.pdf)
+- Model: [gdnet on Hugging Face](https://huggingface.co/luping123/gdnet)
+- Paper: [PDF](paper/gdnet.pdf)
 - Demo: not deployed. The Space code is in `space/` and requires a CUDA GPU.
 - Report: [docs/RESULTS.md](docs/RESULTS.md)
 - Benchmark audit: [docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
@@ -58,7 +58,7 @@ Requirements:
 - PyTorch built for your CUDA version.
 - `flash-linear-attention` and its dependencies.
 
-CPU inference is not supported in v1.0.0. The GDN backbone uses Triton kernels and requires CUDA.
+CPU inference is not supported in v0.1.0. The GDN backbone uses Triton kernels and requires CUDA.
 
 ```bash
 git clone https://github.com/lupingQAQ/gdnet.git
@@ -71,7 +71,7 @@ pip install -e .
 Download the weights from Hugging Face:
 
 ```bash
-huggingface-cli download luping123/gdnet-v5 --local-dir weights/gdnet-v5
+huggingface-cli download luping123/gdnet --local-dir weights/gdnet
 ```
 
 Classify a capture:
@@ -79,7 +79,7 @@ Classify a capture:
 ```bash
 python -m gdnet.cli classify \
   --pcap sample.pcap \
-  --weights-dir weights/gdnet-v5 \
+  --weights-dir weights/gdnet \
   --json results.json
 ```
 
@@ -108,7 +108,7 @@ Example record:
 Serve the probe format over HTTP:
 
 ```bash
-python -m gdnet.cli serve --weights-dir weights/gdnet-v5 --port 9012
+python -m gdnet.cli serve --weights-dir weights/gdnet --port 9012
 ```
 
 The service accepts `POST /` with one or more 1620-byte `FLW1` records. It returns a JSON array of results.
@@ -153,7 +153,7 @@ The four classifier arms share the same architecture and differ in pretraining r
 
 Training data comes from lab captures of 18 products and services, plus public benchmark training splits. The SSL pool excludes validation and holdout flows. The validation split is divided into dev and test halves at the flow level. Selection, threshold calibration, and ensemble choice use dev only.
 
-The model was trained on 4 x RTX 4090 GPUs. The released checkpoints are the final V5 arms.
+The model was trained on 4 x RTX 4090 GPUs. The released checkpoints are the final arms.
 
 ## Evaluation protocol
 
@@ -169,7 +169,7 @@ The report also includes a leakage audit. Five of the six public benchmark split
 
 - `stunnel` is the only product with zero recall in the acceptance demo (0/30). It needs enrollment or additional data.
 - The test split is flow-level, not session-level. Each class has one held-out session, so session-level generalization is not measured.
-- The timing-rescue rule used in the 9/10 acceptance result is not included in v1.0.0. The released ensemble alone reproduces the 8/10 raw result.
+- The timing-rescue rule used in the 9/10 acceptance result is not included in v0.1.0. The released ensemble alone reproduces the 8/10 raw result.
 - Mobile and IoT benchmarks are out of scope. The target scope is PCs, servers, and internal network devices.
 - The model was trained on lab traffic. Performance on production networks with different software versions, proxies, or NAT configurations is unknown.
 - CPU inference is not supported.
@@ -187,10 +187,10 @@ Code and weights: Apache-2.0. Documentation: CC-BY-4.0. See [LICENSE](LICENSE) a
 
 ```bibtex
 @software{gdnet2026,
-  title  = {GDNet V5: Byte-level traffic classification for security product discovery},
+  title  = {GDNet: Byte-level traffic classification for security product discovery},
   year   = {2026},
   url    = {https://github.com/lupingQAQ/gdnet},
-  note   = {Model: https://huggingface.co/luping123/gdnet-v5}
+  note   = {Model: https://huggingface.co/luping123/gdnet}
 }
 ```
 

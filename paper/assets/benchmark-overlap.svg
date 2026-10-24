@@ -30,5 +30,5 @@
     <text x="806" y="370">80.8%</text>
   </g>
 
-  <text x="40" y="404" font-size="12" fill="#7b8794">Source: GDNet V5 split audit, 2026-10-24. Exact byte matches, 1600-byte flow format. Tor is the only clean split.</text>
+  <text x="40" y="404" font-size="12" fill="#7b8794">Source: GDNet split audit, 2026-10-24. Exact byte matches, 1600-byte flow format. Tor is the only clean split.</text>
 </svg>

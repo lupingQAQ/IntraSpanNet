@@ -16,7 +16,7 @@ TARGETS = [
     "CITATION.cff",
     "docs/MODEL_CARD.md",
     "docs/LAUNCH.md",
-    "docs/RELEASE_NOTES_v1.0.0.md",
+    "docs/RELEASE_NOTES_v0.1.0.md",
     "docs/social-posts.md",
     "space/README.md",
 ]

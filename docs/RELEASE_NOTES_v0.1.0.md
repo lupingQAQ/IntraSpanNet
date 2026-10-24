@@ -1,10 +1,10 @@
-# GDNet V5 v1.0.0
+# GDNet v0.1.0
 
 Release date: 2026-10-24
 
 ## Summary
 
-GDNet V5 is a byte-level traffic classifier for security product discovery. It identifies 18 security products and services from the first five packets of a flow and rejects unknown products with a prototype-distance threshold. The release contains a four-arm ensemble, a portable inference package, a CLI, an HTTP service, evaluation scripts, and a public-split audit.
+GDNet is a byte-level traffic classifier for security product discovery. It identifies 18 security products and services from the first five packets of a flow and rejects unknown products with a prototype-distance threshold. The release contains a four-arm ensemble, a portable inference package, a CLI, an HTTP service, evaluation scripts, and a public-split audit.
 
 ## Results
 
@@ -40,14 +40,14 @@ GDNet V5 is a byte-level traffic classifier for security product discovery. It i
 
 ```bash
 pip install -e .
-huggingface-cli download luping123/gdnet-v5 --local-dir weights/gdnet-v5
-python -m gdnet.cli classify --pcap sample.pcap --weights-dir weights/gdnet-v5
+huggingface-cli download luping123/gdnet --local-dir weights/gdnet
+python -m gdnet.cli classify --pcap sample.pcap --weights-dir weights/gdnet
 ```
 
 ## Links
 
 - Code: https://github.com/lupingQAQ/gdnet
-- Model: https://huggingface.co/luping123/gdnet-v5
+- Model: https://huggingface.co/luping123/gdnet
 - Space code: `space/` (requires a CUDA GPU; not deployed)
 
 ## License

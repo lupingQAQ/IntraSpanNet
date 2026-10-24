@@ -1,13 +1,13 @@
 # Seven-day release schedule
 
-Status at the start: GitHub repository, release v1.0.0, Hugging Face model, and the technical report on GitHub are live. Zenodo and the preprint server require account actions.
+Status at the start: GitHub repository, release v0.1.0, Hugging Face model, and the technical report on GitHub are live. Zenodo and the preprint server require account actions.
 
 ## Day 0 (done)
 
 - GitHub repository: https://github.com/lupingQAQ/gdnet
-- Release v1.0.0 with source and weight assets.
-- Hugging Face model: https://huggingface.co/luping123/gdnet-v5
-- Technical report: `paper/GDNet-V5.pdf` in the repository.
+- Release v0.1.0 with source and weight assets.
+- Hugging Face model: https://huggingface.co/luping123/gdnet
+- Technical report: `paper/gdnet.pdf` in the repository.
 - Model card, results, benchmark audit, and launch copy are in the repository.
 
 ## Day 1: DOI and preprint
@@ -65,4 +65,4 @@ Do not write "accepted" or "published". A preprint is not peer reviewed.
 - No claim that the malicious head replaces an IDS.
 - No claim that the benchmark numbers are clean. The audit is part of the release.
 - If a venue asks about AI assistance, follow its disclosure policy. Do not claim human-only authorship if that is not true.
-- Cite the version DOI, not the concept DOI, when referring to v1.0.0.
+- Cite the version DOI, not the concept DOI, when referring to v0.1.0.

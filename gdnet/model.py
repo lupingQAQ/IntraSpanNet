@@ -1,7 +1,7 @@
-"""GDNet V5 dual-head classifier.
+"""GDNet dual-head classifier.
 
 Checkpoint compatibility: the module names and nesting here match the
-released stage3_v5_*.pth files. Keep them unchanged when editing.
+released stage3_*.pth files. Keep them unchanged when editing.
 """
 
 from __future__ import annotations

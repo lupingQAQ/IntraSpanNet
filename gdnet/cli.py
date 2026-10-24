@@ -1,4 +1,4 @@
-"""Command-line interface for GDNet V5."""
+"""Command-line interface for GDNet."""
 
 from __future__ import annotations
 
@@ -110,15 +110,15 @@ def cmd_serve(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="gdnet", description="GDNet V5 traffic classifier")
-    parser.add_argument("--version", action="version", version="gdnet 1.0.0")
+    parser = argparse.ArgumentParser(prog="gdnet", description="GDNet traffic classifier")
+    parser.add_argument("--version", action="version", version="gdnet 0.1.0")
     sub = parser.add_subparsers(dest="command", required=True)
 
     classify = sub.add_parser("classify", help="classify pcap files or 1600-byte flow bins")
-    classify.add_argument("--weights-dir", required=True, help="directory with stage3_v5_*.pth and prototypes")
+    classify.add_argument("--weights-dir", required=True, help="directory with stage3_*.pth and prototypes")
     classify.add_argument("--pcap", nargs="+", default=[], help="pcap/pcapng files or glob patterns")
     classify.add_argument("--flow-dir", default="", help="directory containing flow_*.bin")
-    classify.add_argument("--device", default=None, help="cuda or cpu (cpu is not supported in v1.0.0)")
+    classify.add_argument("--device", default=None, help="cuda or cpu (cpu is not supported in v0.1.0)")
     classify.add_argument("--batch", type=int, default=64)
     classify.add_argument("--min-pkts", type=int, default=1)
     classify.add_argument("--topk", type=int, default=3)

@@ -1,4 +1,4 @@
-"""Byte-level GDN backbone used by GDNet V5.
+"""Byte-level GDN backbone used by GDNet.
 
 The architecture follows the byte-level Mamba/GDN encoder used by
 MambaNetBurst (https://github.com/gayanku/MambaNetBurst). The code here is a

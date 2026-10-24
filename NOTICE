@@ -1,6 +1,6 @@
 # NOTICE
 
-GDNet V5 includes an independent implementation of a byte-level GDN encoder. The architecture follows the MambaNetBurst project:
+GDNet includes an independent implementation of a byte-level GDN encoder. The architecture follows the MambaNetBurst project:
 
 - MambaNetBurst: https://github.com/gayanku/MambaNetBurst
 - The upstream README declares the MIT license. The upstream checkout used during development did not contain a separate LICENSE file. No upstream source files are redistributed in this repository; the encoder here is a trimmed GDN-only implementation.

@@ -7,7 +7,7 @@ Accepted inputs:
   - a directory of flow_*.bin files plus --labels CSV with columns source,label
 
 Example:
-  python scripts/evaluate.py --weights-dir weights/gdnet-v5 --npz test.npz
+  python scripts/evaluate.py --weights-dir weights/gdnet --npz test.npz
 """
 
 from __future__ import annotations

@@ -18,11 +18,11 @@ metrics:
   - auroc
 ---
 
-# GDNet V5
+# GDNet
 
-GDNet V5 identifies security products and services from the first five packets of a network flow. It reports a product label, a type, a tier, and an open-set distance. Flows that do not match a known product are rejected as unknown.
+GDNet identifies security products and services from the first five packets of a network flow. It reports a product label, a type, a tier, and an open-set distance. Flows that do not match a known product are rejected as unknown.
 
-This repository contains the weights and configuration. Code is at [github.com/lupingQAQ/gdnet](https://github.com/lupingQAQ/gdnet).
+This repository contains the weights and configuration. Code is at [github.com/lupingQAQ/gdnet](https://github.com/lupingQAQ/gdnet). The technical report is at [paper/gdnet.pdf](https://github.com/lupingQAQ/gdnet/blob/main/paper/gdnet.pdf).
 
 ## Model details
 
@@ -73,7 +73,7 @@ Additional results:
 
 - Unknown rejection: 100% on 18 unknown-product bins.
 - Malicious macro-F1: 0.9702 on deduplicated USTC-TFC2016 (n=1242).
-- Acceptance: 8/10 products without timing rescue; 9/10 with the internal timing rule, which is not included in v1.0.0.
+- Acceptance: 8/10 products without timing rescue; 9/10 with the internal timing rule, which is not included in v0.1.0.
 - Throughput: 253 flows/s for the ensemble, 1,017 flows/s for one arm, on an RTX 4090.
 
 The test split is a flow-level half of the validation set, not a session-level holdout. Each class has one held-out session. See [docs/RESULTS.md](https://github.com/lupingQAQ/gdnet/blob/main/docs/RESULTS.md) for the full protocol.
@@ -95,10 +95,10 @@ The model outputs a probability and a distance, not a fact. Treat low-confidence
 
 ## Files
 
-- `stage3_v5_*.pth`: six classifier arms.
-- `prototypes_v5_*_k3.pth`: prototype matrices.
+- `stage3_*.pth`: six classifier arms.
+- `prototypes_*_k3.pth`: prototype matrices.
 - `stage1_clean_*.pth`: contrastive encoders.
-- `student_v5_d1.pth`: distilled student, experimental.
+- `student_d1.pth`: distilled student, experimental.
 - `config.json`: ensemble configuration and reference metrics.
 - `labels.json`: label table.
 - `SHA256SUMS`: checksums.
@@ -107,9 +107,9 @@ The model outputs a probability and a distance, not a fact. Treat low-confidence
 
 ```bibtex
 @software{gdnet2026,
-  title  = {GDNet V5: Byte-level traffic classification for security product discovery},
+  title  = {GDNet: Byte-level traffic classification for security product discovery},
   year   = {2026},
   url    = {https://github.com/lupingQAQ/gdnet},
-  note   = {Model: https://huggingface.co/luping123/gdnet-v5}
+  note   = {Model: https://huggingface.co/luping123/gdnet}
 }
 ```

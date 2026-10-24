@@ -1,4 +1,4 @@
-"""Portable inference for the GDNet V5 ensemble."""
+"""Portable inference for the GDNet ensemble."""
 
 from __future__ import annotations
 
@@ -42,8 +42,8 @@ def _check_classes(classes: Sequence[str], source: str) -> None:
 
 
 def load_arm(weights_dir: str, name: str, device: torch.device) -> Arm:
-    ckpt_path = os.path.join(weights_dir, f"stage3_v5_{name}.pth")
-    proto_path = os.path.join(weights_dir, f"prototypes_v5_{name}3_k3.pth")
+    ckpt_path = os.path.join(weights_dir, f"stage3_{name}.pth")
+    proto_path = os.path.join(weights_dir, f"prototypes_{name}_k3.pth")
     if not os.path.exists(ckpt_path):
         raise FileNotFoundError(ckpt_path)
     if not os.path.exists(proto_path):
@@ -94,8 +94,8 @@ class Ensemble:
         self.device = torch.device(device)
         if self.device.type == "cpu" and not allow_cpu:
             raise RuntimeError(
-                "GDNet V5 uses Triton GDN kernels and requires a CUDA GPU. "
-                "CPU inference is not supported in v1.0.0. "
+                "GDNet uses Triton GDN kernels and requires a CUDA GPU. "
+                "CPU inference is not supported in v0.1.0. "
                 "Pass allow_cpu=True only if your flash-linear-attention build has a CPU path."
             )
 

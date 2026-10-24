@@ -1,14 +1,14 @@
 cff-version: 1.2.0
 message: "If you use this model, cite the software entry below."
-title: "GDNet V5: Byte-level traffic classification for security product discovery"
-version: 1.0.0
+title: "GDNet: Byte-level traffic classification for security product discovery"
+version: 0.1.0
 date-released: 2026-10-24
 license: Apache-2.0
 type: software
 authors:
   - name: "GDNet contributors"
 repository-code: "https://github.com/lupingQAQ/gdnet"
-url: "https://huggingface.co/luping123/gdnet-v5"
+url: "https://huggingface.co/luping123/gdnet"
 keywords:
   - network security
   - traffic classification

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" font-family="Segoe UI, Arial, sans-serif">
   <rect width="1200" height="430" fill="#f7f8fa"/>
-  <text x="40" y="44" font-size="22" font-weight="600" fill="#1f2933">GDNet V5 inference path</text>
+  <text x="40" y="44" font-size="22" font-weight="600" fill="#1f2933">GDNet inference path</text>
 
   <g fill="#ffffff" stroke="#9aa5b1" stroke-width="1.2">
     <rect x="40" y="90" width="150" height="90" rx="6"/>

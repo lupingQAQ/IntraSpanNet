@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 ## Inference path
 
@@ -38,7 +38,7 @@ pcap/pcapng
 3. IP masking. IPv4 source and destination addresses are zeroed. The model cannot memorize host addresses. Ports, protocol, headers, and payload remain.
 4. Prototype-based open set. The product head is closed-set. A separate prototype distance decides whether to trust it. The threshold is calibrated on dev, not test.
 5. Four-arm ensemble. The arms differ in pretraining recipe and loss weighting. Averaging reduces variance. The gate uses two arms whose operating points were stable across dev folds.
-6. GPU-only inference. The GDN layer uses Triton kernels. A CPU path would require a separate implementation and is not part of v1.0.0.
+6. GPU-only inference. The GDN layer uses Triton kernels. A CPU path would require a separate implementation and is not part of v0.1.0.
 7. No data in the repository. Captures are not redistributed. The released weights and a synthetic test capture are sufficient to exercise the pipeline.
 
 ## Hardware
