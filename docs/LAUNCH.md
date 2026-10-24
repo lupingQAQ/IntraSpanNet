@@ -1,5 +1,7 @@
 # Launch plan
 
+For the dated schedule, see [LAUNCH_7DAY.md](LAUNCH_7DAY.md).
+
 ## Positioning
 
 One sentence: GDNet V5 identifies 18 security products and services from the first five packets of a flow, rejects unknown products, and ships with an audit of the public benchmark splits used for comparison.
