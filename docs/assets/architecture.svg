@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1200" height="430" fill="#f7f8fa"/>
+  <text x="40" y="44" font-size="22" font-weight="600" fill="#1f2933">GDNet V5 inference path</text>
+
+  <g fill="#ffffff" stroke="#9aa5b1" stroke-width="1.2">
+    <rect x="40" y="90" width="150" height="90" rx="6"/>
+    <rect x="230" y="90" width="190" height="90" rx="6"/>
+    <rect x="460" y="90" width="150" height="90" rx="6"/>
+    <rect x="650" y="90" width="150" height="90" rx="6"/>
+    <rect x="840" y="90" width="130" height="90" rx="6"/>
+  </g>
+
+  <g fill="#1f2933" font-size="14" text-anchor="middle">
+    <text x="115" y="125">pcap / pcapng</text>
+    <text x="115" y="147" font-size="12" fill="#52606d">unidirectional flows</text>
+
+    <text x="325" y="122">flow vector</text>
+    <text x="325" y="144" font-size="12" fill="#52606d">5 packets x 320 B</text>
+    <text x="325" y="162" font-size="12" fill="#52606d">IPv4 addresses zeroed</text>
+
+    <text x="535" y="130">ByteEmbed</text>
+    <text x="535" y="150" font-size="12" fill="#52606d">256</text>
+
+    <text x="725" y="126">4 x GDN</text>
+    <text x="725" y="146" font-size="12" fill="#52606d">d_model 256</text>
+    <text x="725" y="164" font-size="12" fill="#52606d">d_state 16</text>
+
+    <text x="905" y="130">CLS</text>
+    <text x="905" y="150" font-size="12" fill="#52606d">256</text>
+  </g>
+
+  <g stroke="#52606d" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+    <line x1="190" y1="135" x2="226" y2="135"/>
+    <line x1="420" y1="135" x2="456" y2="135"/>
+    <line x1="610" y1="135" x2="646" y2="135"/>
+    <line x1="800" y1="135" x2="836" y2="135"/>
+  </g>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52606d"/>
+    </marker>
+  </defs>
+
+  <g fill="#ffffff" stroke="#9aa5b1" stroke-width="1.2">
+    <rect x="460" y="230" width="510" height="70" rx="6"/>
+    <rect x="40" y="230" width="380" height="70" rx="6"/>
+    <rect x="40" y="335" width="930" height="60" rx="6"/>
+  </g>
+
+  <g fill="#1f2933" font-size="14" text-anchor="middle">
+    <text x="230" y="258">four classifier arms</text>
+    <text x="230" y="280" font-size="12" fill="#52606d">b_s0, a_lda, b_lda, a_s0</text>
+
+    <text x="715" y="258">four heads</text>
+    <text x="715" y="280" font-size="12" fill="#52606d">product 18, type 10, tier 3, malicious 11</text>
+
+    <text x="505" y="362">average softmax over 4 arms  |  average prototype distance over 2 gate arms  |  threshold 0.1041</text>
+    <text x="505" y="383" font-size="12" fill="#52606d">output: product, type, tier, distance, confidence, unknown</text>
+  </g>
+
+  <g stroke="#52606d" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+    <line x1="905" y1="180" x2="905" y2="226"/>
+    <line x1="230" y1="300" x2="230" y2="331"/>
+    <line x1="715" y1="300" x2="715" y2="331"/>
+  </g>
+
+  <text x="40" y="415" font-size="12" fill="#7b8794">Reference GPU: RTX 4090. CPU inference is not supported. Input budget: 1600 bytes per flow.</text>
+</svg>

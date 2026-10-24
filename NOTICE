@@ -1,0 +1,21 @@
+# NOTICE
+
+GDNet V5 includes an independent implementation of a byte-level GDN encoder. The architecture follows the MambaNetBurst project:
+
+- MambaNetBurst: https://github.com/gayanku/MambaNetBurst
+- The upstream README declares the MIT license. The upstream checkout used during development did not contain a separate LICENSE file. No upstream source files are redistributed in this repository; the encoder here is a trimmed GDN-only implementation.
+
+The GDN layer is provided by flash-linear-attention:
+
+- flash-linear-attention: https://github.com/fla-org/flash-linear-attention
+- Gated Delta Networks: Improving Mamba2 with the Delta Rule, arXiv:2412.06464.
+
+Other dependencies:
+
+- PyTorch, BSD-3-Clause.
+- dpkt, BSD-3-Clause.
+- NumPy, BSD-3-Clause.
+
+Public benchmark names and numbers are cited for comparison. The datasets are not redistributed. See `docs/BENCHMARK_AUDIT.md` for the split audit and references.
+
+The model was trained on lab traffic collected by the project authors and on public benchmark training splits. No customer traffic is included.

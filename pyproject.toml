@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gdnet-traffic"
+version = "1.0.0"
+description = "Byte-level traffic classification for security product discovery"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "GDNet contributors" }]
+keywords = ["network-security", "traffic-classification", "open-set-recognition", "mamba", "gdn"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Security",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.26",
+  "torch>=2.4",
+  "dpkt>=1.9",
+  "flash-linear-attention>=0.3",
+]
+
+[project.optional-dependencies]
+space = ["gradio>=5.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+gdnet = "gdnet.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["gdnet*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

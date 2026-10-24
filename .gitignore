@@ -1,0 +1,33 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Weights and data are distributed separately.
+weights/
+*.pth
+*.pt
+*.onnx
+*.npz
+data/
+*.pcap
+*.pcapng
+*.cap
+*.bin
+!examples/sample.pcap
+logs/
+runs/
+
+# Generated Space payloads
+space/gdnet/
+space/gdnet-v5/

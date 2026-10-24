@@ -1,0 +1,8 @@
+# Core inference. Install the CUDA build of torch for your driver first.
+torch>=2.4
+numpy>=1.26
+dpkt>=1.9
+flash-linear-attention>=0.3
+
+# The Space extra is optional:
+# gradio>=5.0
