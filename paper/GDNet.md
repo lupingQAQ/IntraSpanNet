@@ -4,7 +4,7 @@ Author: lupingQAQ, independent researcher
 
 ## Abstract
 
-Networks run more security agents than any inventory lists, and during an incident that gap costs time. I built a small classifier that reads the first five packets of a flow and masks the addresses. It names the security product behind the flow, or says it does not know. Four 2.86M-parameter arms vote. On a 503-flow test split the ensemble reaches 0.8787 product accuracy and 0.9245 tier accuracy, the gate AUROC is 0.9784, and all 18 unknown-product bins are rejected. Along the way I audited six public benchmarks. Five of them share about 80% of their test flows with train, byte for byte; Tor is the only clean one. That finding is why this paper reports deduplicated numbers and declines the usual leaderboard claim. Code and weights are Apache-2.0; inference needs a CUDA GPU.
+Every network I have touched runs more security agents than its inventory admits. GDNet reads the first five packets of a flow, strips the addresses, and names the product behind it, or backs off and says unknown. Four 2.86M-parameter arms vote. On 503 test flows they get 0.8787 product accuracy, 0.9245 tier accuracy, and 0.9784 gate AUROC. Every unknown-product bin is rejected. While building it I hashed six public benchmarks and found that five share roughly 80% of their test flows with train, byte for byte. Tor is clean. That is why this paper reports deduplicated numbers and makes no leaderboard claim. Apache-2.0, CUDA required.
 
 ## 1 Introduction
 
@@ -128,30 +128,40 @@ The split is at flow level, not session level. Each class has one held-out sessi
 | Tier accuracy | 0.9245 | 0.9334 |
 | Macro-F1, supported classes | 0.7621 | 0.8240 |
 | Gate AUROC | 0.9784 | 0.9820 (dev) |
+| Unknown rejection | 18/18 | 18/18 |
 
-The table is the summary; two entries deserve comment. Macro-F1 on the test half leans on classes with one or two flows — `wireguard` has exactly one — so I quote the all-validation value, 0.8240, instead. Everything else reads as measured.
+The result I care about is not an accuracy figure. Every unknown-product bin was rejected, and the operating point held from q=0.64 through q=0.75 with no drift. That is the number that would survive a new network, because it does not depend on knowing the products.
 
-The unknown bins matter more to me than the accuracy. All 18 rejected at the fixed threshold, stable from q=0.64 to q=0.75. The malicious head, on the deduplicated USTC test set of 1,242 flows, reaches 0.9702 macro-F1; binary F1 stays above 0.994.
+The macro-F1 split I will not defend. `wireguard` has one test flow; one error flips the class. All validation is the honest reference.
+
+| Malicious head | Value |
+|---|---:|
+| Macro-F1, dedup USTC (1,242 flows) | 0.9702 |
+| Binary F1 | >0.994 |
 
 ### 4.4 Acceptance and enrollment
 
-The acceptance set has 264 product bins and 18 unknown bins. The raw ensemble gets 8 of 10 products right. A timing rule that uses inter-arrival times raises this to 9, but the rule is not in the release. I did not want to ship a second model without its own calibration. Unknown bins are rejected at 100% in both settings.
+The raw ensemble accepts 8 of 10 products in the 264-bin acceptance set. A timing rule that watches inter-arrival times would push it to 9. I left that out rather than ship a second model without its own calibration. `stunnel` is the failure: 30 bins, zero hits, every threshold, same result. Enrollment on `smb` proves the mechanism works (8/8 after three sub-prototypes), but `stunnel` needs its own data.
 
-`stunnel` is the failure: 0 of 30 bins. `wireguard` has two bins; I treat that as noise.
-
-The HTTP service returns 6/6 known flows on FLW1 records. Enrollment reaches 8/8 after three sub-prototypes for `smb`.
+HTTP service: 6 of 6 on FLW1 records.
 
 ### 4.5 Throughput and memory
 
-On one RTX 4090 a single arm classifies about 1,017 flows per second and the four-arm ensemble about 253. Batch-1 latency is 10.7 and 43.1 milliseconds. The ensemble peaks near 3.4 GB at batch 128, so an 8 GB card is comfortable. The probe captures faster than the ensemble classifies, which means real deployments sample, shard, or classify on demand.
+| Configuration | Throughput | Batch-1 latency | Peak VRAM, batch 128 |
+|---|---:|---:|---:|
+| Single arm | 1,017 flows/s | 10.7 ms | 3.37 GB |
+| Ensemble | 253 flows/s | 43.1 ms | 3.40 GB |
+| Distilled student | 1,011 flows/s | 10.6 ms | 3.37 GB |
+
+The probe captures faster than the ensemble classifies. On one card a single arm keeps pace; the full ensemble does not, which pushes deployments toward sampling or sharding. An 8 GB card has room to spare.
 
 ## 5 Public Split Audit
 
 ### 5.1 Method
 
-I hash every flow in the distributed train, validation, and test directories. Two hashes are used: MD5 of the PNG file bytes, and MD5 of the decoded grayscale pixels. The two hashes agree. Duplicates are exact byte-level matches, not near-duplicates. The input unit is 1,600 bytes, matching the model input.
+One hash per file, done two ways. I hash the PNG bytes, then the decoded pixels. They agree everywhere. A duplicate is an exact byte match, not a near miss. The unit is 1,600 bytes, the model's own input vector.
 
-The audit covers six benchmarks used in the internal comparison: ISCXVPN2016, ISCXTor2016, USTC-TFC2016, CICIoT2022, CrossPlatform-Android, and CrossPlatform-iOS. The scripts ship with the code.
+Six benchmarks came under audit: ISCXVPN2016, ISCXTor2016, USTC-TFC2016, CICIoT2022, CrossPlatform-Android, and CrossPlatform-iOS. Scripts ship with the code.
 
 ### 5.2 Results
 
@@ -168,13 +178,13 @@ The audit covers six benchmarks used in the internal comparison: ISCXVPN2016, IS
 
 *Figure 2. Exact byte-level train/test overlap in six public benchmarks. Tor is the only clean split.*
 
-Label conflicts across splits are zero. Every duplicate stays within its class. The likely cause is independent sampling from the same flow pool without cross-split deduplication. That is a property of the data distribution, not of a single paper.
+Label conflicts across splits: zero. Every duplicate stays within its class. Independent sampling from the same flow pool, no cross-split deduplication. A property of the data, not of any one paper.
 
 ### 5.3 Impact
 
-Eighty percent overlap turns a test set into a memory quiz. A model can score 0.99 by recognizing flows it saw in training, and five of these six benchmarks reward exactly that. Comparisons inside one split still mean something, since both sides get the same head start. As evidence of generalization they mean nothing.
+Five of the six splits let a model memorize its test set. That is what 80% byte-identical overlap does in practice: the score measures recall of training data, not generalization. Same-split comparisons still work, since both sides get the same head start. Cross-split claims do not.
 
-Tor is the one benchmark where nothing is duplicated. It is also where the internal report puts its strongest cross-model evidence. For the other five I report the original split and the deduplicated subset side by side.
+Tor duplicates nothing. It is the one benchmark where a number means what it says. The internal report puts its strongest cross-model evidence there, and for the other five I report both the original and the deduplicated numbers.
 
 ### 5.4 Deduplicated evaluation
 
@@ -258,18 +268,20 @@ The input has no addresses and no payload semantics. The model sees byte pattern
 
 ## References
 
-1. MambaNetBurst: direct byte-level network traffic classification without tokenization or pretraining. arXiv:2605.11034, 2026.
-2. NetMamba, efficient traffic classification with a pre-trained unidirectional Mamba. arXiv:2405.11886 (2024).
-3. ET-BERT: a contextualized datagram representation with pre-training transformers for encrypted traffic classification. WWW 2022; also arXiv:2110.02633.
-4. YaTC, yet another traffic classifier: a masked autoencoder over flow images. arXiv:2305.19077.
-5. netFound, a foundation model for network security. arXiv:2310.17025, first posted 2023, revised 2026.
-6. Gated Delta Networks: improving Mamba2 with the delta rule. arXiv:2412.06464 (2024).
-7. Jake Snell, Kevin Swersky, and Richard Zemel. Prototypical networks for few-shot learning. NeurIPS 2017, arXiv:1703.05175.
-8. The Sweet Danger of Sugar (Pcap-Encoder). ACM SIGCOMM 2025, arXiv:2507.16438.
-9. The Emperor Has No Clothes: AI/ML for network security. ACM CCS 2022.
-10. NetBench, a benchmark for network traffic classification. ACM FMSys 2024.
-11. flash-linear-attention, source repository. github.com/fla-org/flash-linear-attention.
-12. PyTorch: an imperative style, high-performance deep learning library. NeurIPS 2019.
+| # | Citation |
+|---|---|
+| 1 | MambaNetBurst, arXiv:2605.11034, 2026 |
+| 2 | NetMamba, arXiv:2405.11886, 2024 |
+| 3 | ET-BERT, WWW 2022, arXiv:2110.02633 |
+| 4 | YaTC, arXiv:2305.19077 |
+| 5 | netFound, arXiv:2310.17025, revised 2026 |
+| 6 | Gated Delta Networks, arXiv:2412.06464, 2024 |
+| 7 | Snell, Swersky, Zemel, prototypical networks, NeurIPS 2017 |
+| 8 | The Sweet Danger of Sugar, SIGCOMM 2025, arXiv:2507.16438 |
+| 9 | The Emperor Has No Clothes, CCS 2022 |
+| 10 | NetBench, FMSys 2024 |
+| 11 | flash-linear-attention, github.com/fla-org/flash-linear-attention |
+| 12 | PyTorch, NeurIPS 2019 |
 
 Nothing in the repository is a capture. The weights saw lab traffic and public benchmark training splits, and the checksums let anyone verify which files they are loading.
 
