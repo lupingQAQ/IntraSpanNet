@@ -1,111 +1,155 @@
 @page {
   size: A4;
-  margin: 18mm 18mm 20mm 18mm;
+  margin: 12.5mm 13mm 12.5mm 13mm;
 }
 
 html {
-  font-size: 10.5pt;
+  font-size: 9.2pt;
 }
 
 body {
   margin: 0;
-  color: #111;
-  font-family: Cambria, Georgia, "Times New Roman", serif;
-  line-height: 1.45;
+  color: #000;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  line-height: 1.16;
   text-align: justify;
   hyphens: auto;
+  column-count: 2;
+  column-gap: 6.5mm;
+  column-fill: balance;
 }
 
+/* Title block spans both columns */
 h1 {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 20pt;
-  line-height: 1.2;
-  margin: 0 0 4mm 0;
+  column-span: all;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 21pt;
+  font-weight: normal;
+  line-height: 1.15;
   text-align: center;
+  margin: 0 0 5mm 0;
 }
 
-h1 + p,
-h1 + p + p,
-h1 + p + p + p,
-h1 + p + p + p + p {
+h1 + p {
+  column-span: all;
   text-align: center;
-  margin-bottom: 1mm;
+  font-size: 10.5pt;
+  margin: 0 0 6mm 0;
 }
 
 h2 {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 13pt;
-  margin: 7mm 0 2.5mm 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 9.2pt;
+  font-weight: normal;
+  font-variant: small-caps;
+  text-align: center;
+  margin: 4.2mm 0 1.6mm 0;
   page-break-after: avoid;
+  break-after: avoid;
 }
 
 h3 {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 11pt;
-  margin: 5mm 0 2mm 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 9.2pt;
+  font-weight: normal;
+  font-style: italic;
+  text-align: left;
+  margin: 3.2mm 0 1.2mm 0;
   page-break-after: avoid;
+  break-after: avoid;
 }
 
 p {
-  margin: 0 0 2.6mm 0;
+  margin: 0 0 1.6mm 0;
+  text-indent: 4.2mm;
   orphans: 2;
   widows: 2;
 }
 
-p > strong:first-child {
-  font-weight: 600;
+h1 + p,
+h2 + p,
+h3 + p,
+p:first-of-type {
+  text-indent: 0;
+}
+
+.abstract {
+  font-weight: bold;
+  font-size: 8.7pt;
+  text-indent: 0;
+  margin-bottom: 2.2mm;
+}
+
+
+ul {
+  margin: 1mm 0 2mm 4.5mm;
+  padding: 0;
+  font-size: 8.9pt;
+}
+
+li {
+  margin-bottom: 0.9mm;
+  text-align: justify;
 }
 
 a {
-  color: #1a4f8a;
+  color: #000;
   text-decoration: none;
 }
 
 code {
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 8.6pt;
-  background: #f4f4f4;
-  padding: 0.4mm 1mm;
-  border-radius: 1mm;
+  font-family: "Courier New", monospace;
+  font-size: 8pt;
 }
 
 pre {
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 8.2pt;
-  line-height: 1.35;
-  background: #f6f6f6;
-  border: 0.2mm solid #ddd;
-  padding: 2.2mm 3mm;
-  margin: 2.5mm 0 3mm 0;
+  font-family: "Courier New", monospace;
+  font-size: 7.2pt;
+  line-height: 1.2;
+  border: 0.2mm solid #000;
+  padding: 1.6mm 2mm;
+  margin: 2mm 0;
   white-space: pre-wrap;
   page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 pre code {
-  background: none;
-  padding: 0;
   font-size: inherit;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 2.5mm 0 3.5mm 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 8.2pt;
+  margin: 2mm 0 1mm 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 7.4pt;
   page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 th, td {
-  border: 0.2mm solid #bbb;
-  padding: 1.2mm 1.6mm;
+  border: none;
+  border-top: 0.35mm solid #000;
+  border-bottom: 0.15mm solid #000;
+  padding: 0.8mm 1mm;
   text-align: left;
   vertical-align: top;
 }
 
+/* IEEE rule: table body top/bottom rules only, no vertical lines */
+table tr:first-child th {
+  border-top: 0.5mm solid #000;
+}
+
+table tr:last-child td {
+  border-bottom: 0.5mm solid #000;
+}
+
 th {
-  background: #eef1f4;
-  font-weight: 600;
+  font-weight: bold;
+  background: none;
+  text-align: center;
 }
 
 td:nth-child(n+2) {
@@ -118,9 +162,10 @@ table.text-table th {
 }
 
 figure {
-  margin: 3mm 0 4mm 0;
+  margin: 2mm 0 1mm 0;
   text-align: center;
   page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 img {
@@ -132,76 +177,76 @@ em {
   font-style: italic;
 }
 
-ul, ol {
-  margin: 1.5mm 0 2.5mm 6mm;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 1mm;
-}
-
-blockquote {
-  margin: 2mm 0 3mm 0;
-  padding-left: 3mm;
-  border-left: 0.8mm solid #999;
-  color: #333;
-}
-
-hr {
-  display: none;
-}
-
-.title-block {
-  text-align: center;
-  margin-bottom: 8mm;
-}
-
-.title-block h1 {
-  text-align: center;
-  margin-bottom: 5mm;
-}
-
-.title-block .author {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 11pt;
-  margin-bottom: 1.5mm;
-}
-
-.title-block .affil {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 9.5pt;
-  color: #444;
-  margin-bottom: 3mm;
-}
-
-.title-block .links {
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 8.5pt;
-  color: #1a4f8a;
-  margin-bottom: 1mm;
-}
-
-.abstract {
-  margin: 4mm 8mm 5mm 8mm;
-  font-size: 9.8pt;
-}
-
-.abstract h2 {
-  text-align: center;
-  font-size: 11pt;
-  margin: 0 0 2mm 0;
-}
-
-.references {
-  font-size: 8.8pt;
+/* Table and figure captions: small caps label + sentence case */
+p > em:only-child {
+  display: block;
+  font-style: normal;
+  font-size: 7.6pt;
   text-align: left;
+  text-indent: 0;
+  margin: 0.8mm 0 3mm 0;
+  line-height: 1.2;
+}
+
+/* Display equations */
+.eq {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 1.6mm 0;
+  text-indent: 0;
+  font-size: 9pt;
+  page-break-inside: avoid;
+}
+
+.eq .eqbody {
+  flex: 1;
+  text-align: center;
+  font-style: italic;
+}
+
+.eq .eqno {
+  width: 8mm;
+  text-align: right;
+  font-style: normal;
+}
+
+sub, sup {
+  font-size: 68%;
+  line-height: 0;
+}
+
+/* References rendered as a compact numbered list */
+h2#references + table {
+  font-size: 7.2pt;
 }
 
 .references ol {
-  margin-left: 6mm;
+  margin: 1.5mm 0 0 5.5mm;
+  padding: 0;
+  font-size: 7.2pt;
+  line-height: 1.18;
+  text-align: left;
 }
 
 .references li {
-  margin-bottom: 1.2mm;
+  margin-bottom: 0.9mm;
+}
+
+pre {
+  font-size: 6.7pt;
+}
+.tableblock {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin: 2mm 0 1mm 0;
+}
+
+.tableblock table {
+  margin: 0.8mm 0 0 0;
+}
+
+.tableblock > p {
+  margin: 0;
+  text-indent: 0;
 }
