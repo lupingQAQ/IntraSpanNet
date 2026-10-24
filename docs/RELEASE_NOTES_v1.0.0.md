@@ -48,7 +48,7 @@ python -m gdnet.cli classify --pcap sample.pcap --weights-dir weights/gdnet-v5
 
 - Code: https://github.com/lupingQAQ/gdnet
 - Model: https://huggingface.co/luping123/gdnet-v5
-- Demo: https://huggingface.co/spaces/luping123/gdnet-demo
+- Space code: `space/` (requires a CUDA GPU; not deployed)
 
 ## License
 
