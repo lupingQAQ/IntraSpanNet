@@ -8,8 +8,9 @@ Target: PCs, servers, and internal network devices. The model identifies securit
 
 ## Released system
 
-- Classifier arms: `b_s0`, `a_lda`, `b_lda`, `a_s0`
-- Gate arms: `a_lda`, `b_lda`
+- Classifier arms: A-S0, A-LDA, B-LDA, B-S0
+- Gate arms: A-LDA, B-LDA
+- Arm naming: the letter is the pre-training run (A or B), the suffix is the training variant (`s0` standard multi-task objective, `lda` logit adjustment by class prior, `hn` hard-negative weighting). Checkpoint files carry the same labels in lower case, for example `stage3_a_s0.pth` is arm A-S0.
 - Open-set threshold: `0.1041`
 - Input: first 5 packets, 320 bytes per packet, IPv4 addresses masked
 - Parameters: 2.86M per arm, 11.44M for the ensemble

@@ -110,20 +110,32 @@ where s is the averaged softmax vector, d̄ the distance averaged over the two g
 
 ### III-D Ensemble, complexity, and footprint
 
-Six arms were trained and four retained, namely b_s0, a_lda, b_lda, and a_s0, while the hard-negative arms a_hn and b_hn reached a higher AUROC but their gate distance moved whenever the threshold was adjusted, so they were dropped on stability grounds rather than on accuracy [1], [9]; averaging is unweighted.
+Six arms were trained, formed by crossing two pre-training runs A and B with three training variants: a standard multi-task objective (S0), logit adjustment by class prior (LDA), and hard-negative weighting inside the contrastive term (HN). Four were retained, A-S0, A-LDA, B-LDA and B-S0, while A-HN and B-HN reached a higher AUROC yet their gate distance moved whenever the threshold was adjusted, so they were dropped on stability grounds rather than on accuracy [1], [9]; averaging is unweighted.
 
-<div class="eq"><span class="eqbody">s(f) = (1/4) Σ<sub>j=1..4</sub> softmax( z<sub>j</sub>(f) ),  d̄(f) = (1/2) Σ<sub>j ∈ {a_lda, b_lda}</sub> d<sub>j</sub>(f)</span><span class="eqno">(4)</span></div>
+*TABLE IV. The six trained arms. Released checkpoints carry the same labels in lower case, for example `stage3_a_s0.pth` for A-S0.*
+
+| Arm | Run | Training variant | Role in release |
+|---|---|---|---|
+| A-S0 | A | standard multi-task | classifier |
+| A-LDA | A | logit adjustment | classifier and gate |
+| B-LDA | B | logit adjustment | classifier and gate |
+| B-S0 | B | standard multi-task | classifier |
+| A-HN | A | hard-negative weighting | dropped |
+| B-HN | B | hard-negative weighting | dropped |
+
+<div class="eq"><span class="eqbody">s(f) = (1/4) Σ<sub>j=1..4</sub> softmax( z<sub>j</sub>(f) ),  d̄(f) = (1/2) Σ<sub>j ∈ {A-LDA, B-LDA}</sub> d<sub>j</sub>(f)</span><span class="eqno">(4)</span></div>
 
 A Gated DeltaNet block is linear in sequence length, so a forward pass costs O(L·d<sub>model</sub>·d<sub>state</sub>) with L = 1,600 [2], [3], [4], and memory is dominated by activations rather than weights, with 46 MB of parameters against 3.40 GB of peak VRAM at batch 128.
 
 ```
 Algorithm 1: Inference for a single flow
-Input: packet stream, threshold τ, arms A = {b_s0, a_lda, b_lda, a_s0}
+Input: packet stream, threshold τ
+       arms S = {A-S0, A-LDA, B-LDA, B-S0}
 Output: product, type, tier, distance, confidence, or unknown
 
  1  collect the first five packets of a unidirectional flow
  2  x <- 1600-byte vector with bytes 12:20 zeroed
- 3  for each arm j in A:
+ 3  for each arm j in S:
  4      e_j <- GDN_encoder_j(x)                 # 256-d CLS
  5      s_j <- softmax(product_head_j(e_j))     # 18 logits
  6  s <- mean over j of s_j
@@ -138,7 +150,7 @@ Output: product, type, tier, distance, confidence, or unknown
 
 The labelled set contains 40,283 flows over 18 classes captured on laboratory hosts and virtual machines, each product having been exercised through its normal update, telemetry, or management path rather than through synthetic payloads [7], [8], [30], [32]. The split is at flow level rather than session level, and because each class appears in exactly one held-out session the test figures describe those sessions rather than a new organisation; 14 sessions cover 18 classes because a single capture session exercises several products on one host [14], [16].
 
-*TABLE IV. Data, splits, and training configuration.*
+*TABLE V. Data, splits, and training configuration.*
 
 | Item | Value |
 |---|---|
@@ -167,7 +179,7 @@ where C<sup>+</sup> denotes that set, gate AUROC compares known flows against un
 
 ## V Results
 
-*TABLE V. Closed-set accuracy, gate quality, and rejection.*
+*TABLE VI. Closed-set accuracy, gate quality, and rejection.*
 
 | Metric | Test (503 flows) | Wilson ± | All validation (1006 flows) | Wilson ± |
 |---|---:|---:|---:|---:|
@@ -181,11 +193,11 @@ where C<sup>+</sup> denotes that set, gate AUROC compares known flows against un
 
 ### V-A Security product identification
 
-The product head attains 0.8787 on the test half and 0.8817 across the full validation set, tier accuracy 0.9245 and 0.9334, and gate AUROC 0.9784 and 0.9820 [1], [9]. All 18 unknown-product bins are rejected at the fixed threshold of 0.1041 [11], [12]. Rejection is unchanged across q = 0.64 to q = 0.75 [11], [12]. Wireguard has exactly one test flow, so the test-half macro-F1 of 0.7621 moves from 1.0 to 0.0 on a single error [14], [16]. The all-validation value of 0.8240 is the stable reference. The malicious head reaches 0.9702 macro-F1 on 1,242 deduplicated USTC flows and never falls below 0.994 binary F1 [15], [32].
+The product head attains 0.8787 on the test half and 0.8817 across the full validation set, tier accuracy 0.9245 and 0.9334, and gate AUROC 0.9784 and 0.9820 [1], [9]. All 18 unknown-product bins are rejected at the fixed threshold of 0.1041, with the rejection rate unchanged between q = 0.64 and q = 0.75 [11], [12]; wireguard has a single test flow, so its class score moves between 1.0 and 0.0 on one error, and the test-half macro-F1 of 0.7621 is therefore not a headline figure [14], [16]. The all-validation value of 0.8240 is the stable reference, and the malicious head reaches 0.9702 macro-F1 on 1,242 deduplicated USTC flows without falling below 0.994 binary F1 [15], [32].
 
 ### V-B Acceptance and enrollment
 
-*TABLE VI. Acceptance and enrollment on 264 product bins and 18 unknown bins.*
+*TABLE VII. Acceptance and enrollment on 264 product bins and 18 unknown bins.*
 
 | Item | Result |
 |---|---:|
@@ -198,11 +210,11 @@ The product head attains 0.8787 on the test half and 0.8817 across the full vali
 | HTTP service, FLW1 records | 6/6 |
 | Enrollment, smb | 8/8 after three sub-prototypes |
 
-A timing rule over inter-arrival times raises the acceptance figure from 8 to 9 of 10 and is excluded from the release because it is a second model without an independent calibration, while stunnel produces 0 hits from 30 bins at every threshold examined; enrollment on smb reaches 8 of 8 after three sub-prototypes were registered, which shows the mechanism functions but does not supply the data stunnel lacks [11], [21]. The HTTP service returns 6 of 6 known flows on FLW1 records, and that is the only end-to-end check that traverses the code path a deployment would use.
+A timing rule over inter-arrival times raises the acceptance figure from 8 to 9 of 10 and is excluded from the release because it is a second model without an independent calibration, while stunnel produces 0 hits from 30 bins at every threshold examined; enrollment on smb reaches 8 of 8 after three sub-prototypes were registered, which shows the mechanism functions but does not supply the data stunnel lacks [11], [21]. The HTTP service returns 6 of 6 known flows on FLW1 records, which is the only end-to-end check that traverses the code path a deployment would use [28], [29].
 
 ### V-C Throughput and memory
 
-*TABLE VII. Throughput and memory on one RTX 4090 in fp32, measured at batch 128 for VRAM and at batch 1 for latency.*
+*TABLE VIII. Throughput and memory on one RTX 4090 in fp32, measured at batch 128 for VRAM and at batch 1 for latency.*
 
 | Configuration | Throughput | Batch-1 latency | Peak VRAM, batch 128 |
 |---|---:|---:|---:|
@@ -214,7 +226,7 @@ The probe captures faster than the 253-flow/s ensemble classifies, so a deployme
 
 ### V-D Public split audit
 
-*TABLE VIII. Exact byte-level train/test overlap in six public benchmarks.*
+*TABLE IX. Exact byte-level train/test overlap in six public benchmarks.*
 
 | Benchmark | Train | Test | Train ∩ test | Share of test | Clean test |
 |---|---:|---:|---:|---:|---:|
@@ -235,7 +247,7 @@ Label conflicts across splits are zero and every duplicate remains inside its cl
 
 ### V-E Deduplicated evaluation
 
-*TABLE IX. Re-evaluation on the deduplicated subsets of three affected benchmarks.*
+*TABLE X. Re-evaluation on the deduplicated subsets of three affected benchmarks.*
 
 | Item | VPN | USTC | CIoT |
 |---|---:|---:|---:|
@@ -249,7 +261,7 @@ Re-scoring on the clean subsets costs 4.4 percentage points of macro-F1 on VPN, 
 
 ### V-F Ablations and variants that did not ship
 
-*TABLE X. Variants and ablations that were examined.*
+*TABLE XI. Variants and ablations that were examined.*
 
 | Variant | Result | Decision |
 |---|---|---|
@@ -265,9 +277,9 @@ Auxiliary pre-training added field, order, and reconstruction objectives, raised
 
 ### VI-A Five packets are enough because the handshake is where the product signs itself.
 
-The 18 products of Appendix A each emit a version string, a certificate, a fixed header, or an update request within those five packets [17], [19], [21]; the acceptance set reaches 8 of 10 products on that budget alone, and later packets carry payload that belongs to the user.
+The acceptance set reaches 8 of 10 products from the first five packets alone, because each product in Appendix A emits a version string, a certificate, a fixed header, or an update request inside that budget [17], [19], [21].
 
-### VI-B A small model is a deployment choice, not a limitation.
+### VI-B Model size follows the deployment constraint.
 
 Each arm holds 2.86M parameters and the ensemble 11.44M, which fits in 46 MB and reaches 3.40 GB of peak VRAM at batch 128, while the 42 KB probe runs in a container without a Python runtime [28], [29]; a larger model would plausibly score higher [1], [10], but the operating constraint here was the 8 GB card that also runs the analyst's tooling.
 
@@ -328,7 +340,7 @@ The Gated DeltaNet kernel is taken from flash-linear-attention [29], and the pub
 
 ## Appendix A: Label Set
 
-*TABLE XI. The 18 products and services, with type and tier.*
+*TABLE XII. The 18 products and services used as the closed label set, with type and tier.*
 
 | Product | Type | Tier |
 |---|---|---|
@@ -351,4 +363,4 @@ The Gated DeltaNet kernel is taken from flash-linear-attention [29], and the pub
 | ssh | Remote administration | Productivity software |
 | ftp | File transfer | Productivity software |
 
-Nothing in the repository is a capture, since the weights were trained on laboratory traffic and on the training splits of public benchmarks, and the published checksums allow any reader to verify which files are loaded.
+No capture is redistributed in the release: the weights were trained on laboratory traffic and on the training splits of public benchmarks [30], [31], [32], and the SHA-256 checksums in the model repository allow any reader to verify which files are loaded [29].

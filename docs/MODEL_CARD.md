@@ -31,7 +31,8 @@ This repository contains the weights and configuration. Code is at [github.com/l
 - Parameters: 2.86M per arm; 11.44M for the four-arm ensemble.
 - Output classes: 18 products, 10 types, 3 tiers, 11 malicious classes.
 - Open-set method: three sub-prototypes per class; cosine distance; threshold 0.1041.
-- Ensemble: classifier arms `b_s0`, `a_lda`, `b_lda`, `a_s0`; gate arms `a_lda`, `b_lda`.
+- Ensemble: classifier arms A-S0, A-LDA, B-LDA, B-S0; gate arms A-LDA and B-LDA.
+- Arm naming: the letter is the pre-training run (A or B), the suffix is the training variant (`s0` standard multi-task objective, `lda` logit adjustment by class prior, `hn` hard-negative weighting). Checkpoint files carry the same labels in lower case, for example `stage3_a_s0.pth` is arm A-S0.
 - License: Apache-2.0.
 
 ## Intended use

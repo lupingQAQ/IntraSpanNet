@@ -1,6 +1,6 @@
 @page {
   size: A4;
-  margin: 12.5mm 13mm 12.5mm 13mm;
+  margin: 11mm 13mm 11mm 13mm;
 }
 
 html {
@@ -60,7 +60,7 @@ h3 {
 }
 
 p {
-  margin: 0 0 1.6mm 0;
+  margin: 0 0 1.4mm 0;
   text-indent: 4.2mm;
   orphans: 2;
   widows: 2;
@@ -222,15 +222,15 @@ h2#references + table {
 }
 
 .references ol {
-  margin: 1.5mm 0 0 5.5mm;
+  margin: 1.2mm 0 0 5mm;
   padding: 0;
-  font-size: 7.2pt;
-  line-height: 1.18;
+  font-size: 6.9pt;
+  line-height: 1.13;
   text-align: left;
 }
 
 .references li {
-  margin-bottom: 0.9mm;
+  margin-bottom: 0.7mm;
 }
 
 pre {

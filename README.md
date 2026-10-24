@@ -29,7 +29,7 @@ Unknown products are rejected when the mean prototype distance exceeds `0.1041`.
 
 ## Results
 
-The final system uses classifier arms `b_s0`, `a_lda`, `b_lda`, `a_s0` and gate arms `a_lda`, `b_lda`.
+The final system uses four classifier arms, A-S0, A-LDA, B-LDA and B-S0, and the gate uses A-LDA and B-LDA. Arm naming: the letter is the pre-training run (A or B), the suffix is the training variant (`s0` standard multi-task objective, `lda` logit adjustment by class prior, `hn` hard-negative weighting). Checkpoint files carry the same labels in lower case, for example `stage3_a_s0.pth` is arm A-S0.
 
 | Metric | Test (503 flows) | All validation (1006 flows) |
 |---|---:|---:|
