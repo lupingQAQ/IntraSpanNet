@@ -5,6 +5,7 @@
 GDNet 从一条流的前 5 个包识别安全产品与服务，输出产品、类型、大类，并对不在已知类别中的流量给出未知告警。发布版本为四臂集成，单臂 2.86M 参数。
 
 - 模型：[Hugging Face 上的 gdnet-v5](https://huggingface.co/luping123/gdnet-v5)
+- 论文：[PDF](paper/GDNet-V5.pdf)
 - 演示：暂未部署。Space 代码在 `space/`，需要 CUDA GPU。
 - 技术报告：[docs/RESULTS.md](docs/RESULTS.md)
 - 基准审计：[docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)

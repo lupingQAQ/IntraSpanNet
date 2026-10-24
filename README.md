@@ -5,6 +5,7 @@ Byte-level traffic classification for security product discovery.
 GDNet identifies security products and services from the first five packets of a network flow. It reports the product, its type and tier, and rejects flows that do not match any known product. The released model is a four-arm ensemble with 2.86M parameters per arm.
 
 - Model: [gdnet-v5 on Hugging Face](https://huggingface.co/luping123/gdnet-v5)
+- Paper: [PDF](paper/GDNet-V5.pdf)
 - Demo: not deployed. The Space code is in `space/` and requires a CUDA GPU.
 - Report: [docs/RESULTS.md](docs/RESULTS.md)
 - Benchmark audit: [docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)

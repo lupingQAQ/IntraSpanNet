@@ -25,6 +25,7 @@ data/
 *.cap
 *.bin
 !examples/sample.pcap
+paper/paper.html
 logs/
 runs/
 
