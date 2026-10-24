@@ -169,6 +169,10 @@ The labelled set contains 40,283 flows over 18 classes captured on laboratory ho
 
 The training code is not in the release because it assumes the laboratory data layout of 40,283 flows and would require cleanup before another group could execute it, whereas the released checkpoints, 54 prototype rows, threshold of 0.1041, and evaluation script reproduce the test-half numbers directly [28], [29]. Model selection is confined to the 503-flow development half, so the 503-flow test half is scored once [14], [16].
 
+Training follows three stages: the contrastive stage optimises NT-Xent over 33,184 training-only flows [23], fine-tuning adds a domain-adversarial term [24] under AdamW [26] with defaults inherited from Adam [27], and the last stage applies REINFORCE to three rewards, namely correct product, correct type, and honest rejection [25].
+
+Reproducibility has two halves: the released checkpoints, 54 prototype rows, threshold and evaluation script reproduce the test-half figures whenever the split is available, while the split itself is withheld because it derives from laboratory traffic; the probe-to-service path collected 99,888 flows in 30 seconds on the test host and the service labelled container-management traffic as unknown, which is the expected behaviour outside the product domain.
+
 ### IV-B Metrics
 
 Product accuracy counts exact product labels and tier accuracy counts exact tier labels, macro-F1 averages over the classes that have at least one test flow according to
@@ -305,38 +309,7 @@ The Gated DeltaNet kernel is taken from flash-linear-attention [29], and the pub
 
 ## References
 
-1. G. K. Kulatilleke, S. Layeghy, M. Baktashmotlagh, and M. Portmann, "MambaNetBurst: direct byte-level network traffic classification without tokenization or pretraining," arXiv:2605.11034, 2026.
-2. A. Gu and T. Dao, "Mamba: linear-time sequence modeling with selective state spaces," arXiv:2312.00752, 2023.
-3. T. Dao and A. Gu, "Transformers are SSMs: generalized models and efficient algorithms through structured state space duality," in Proc. ICML, 2024.
-4. S. Yang, J. Kautz, and A. Hatamizadeh, "Gated delta networks: improving Mamba2 with the delta rule," in Proc. ICLR, 2025.
-5. A. Vaswani et al., "Attention is all you need," in Proc. NeurIPS, 2017.
-6. L. Xue et al., "ByT5: towards a token-free future with pre-trained byte-to-byte models," TACL, vol. 10, 2022.
-7. X. Lin, G. Xiong, G. Gou, Z. Li, J. Shi, and J. Yu, "ET-BERT: a contextualized datagram representation with pre-training transformers for encrypted traffic classification," in Proc. WWW, 2022.
-8. R. Zhao, M. Zhan, X. Deng, Y. Wang, Y. Wang, G. Gui, and Z. Xue, "Yet another traffic classifier (YaTC): a masked autoencoder for flow images," arXiv:2305.19077, 2023.
-9. NetMamba: efficient network traffic classification via pre-training unidirectional Mamba, arXiv:2405.11886, 2024.
-10. netFound: foundation model for network security, arXiv:2310.17025, 2023, revised 2026.
-11. J. Snell, K. Swersky, and R. Zemel, "Prototypical networks for few-shot learning," in Proc. NeurIPS, 2017.
-12. W. J. Scheirer, A. de Rezende Rocha, A. Sapkota, and T. E. Boult, "Toward open set recognition," IEEE TPAMI, vol. 35, no. 7, 2013.
-13. A. Bendale and T. E. Boult, "Towards open set deep networks," in Proc. IEEE CVPR, 2016.
-14. N. Jacobs et al., "AI/ML for network security: the emperor has no clothes," in Proc. ACM CCS, 2022.
-15. R. Zhao et al., "The sweet danger of sugar: the pitfalls of pcap-based encoders," in Proc. ACM SIGCOMM, 2025, arXiv:2507.16438.
-16. NetBench: a benchmark for network traffic classification, in Proc. ACM FMSys, 2024.
-17. M. Zalewski, "p0f v3," https://lcamtuf.coredump.cx/p0f3/
-18. J. Althouse, "TLS fingerprinting with JA3 and JA3S," Salesforce Engineering, 2017.
-19. L. Deri, M. Martinelli, T. Bujlow, and A. Cardigliano, "nDPI: open-source high-speed deep packet inspection," in Proc. IEEE IWCMC, 2014.
-20. A. Sivanathan, H. H. Gharakheili, F. Loi, A. Radford, C. Wijenayake, A. Vishwanath, and V. Sivaraman, "Characterizing and classifying IoT traffic in smart cities and campuses," in Proc. IEEE INFOCOM Workshops, 2017.
-21. M. Miettinen, S. Marchal, I. Hafeez, N. Asokan, A.-R. Sadeghi, and S. Tarkoma, "IoT Sentinel: automated device-type identification for security enforcement in IoT," in Proc. IEEE ICDCS, 2017.
-22. R. Sommer and V. Paxson, "Outside the closed world: on using machine learning for network intrusion detection," in Proc. IEEE S&P, 2010.
-23. T. Chen, S. Kornblith, M. Norouzi, and G. Hinton, "A simple framework for contrastive learning of visual representations," in Proc. ICML, 2020.
-24. Y. Ganin et al., "Domain-adversarial training of neural networks," JMLR, vol. 17, no. 59, 2016.
-25. R. J. Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," Machine Learning, vol. 8, 1992.
-26. I. Loshchilov and F. Hutter, "Decoupled weight decay regularization," in Proc. ICLR, 2019.
-27. D. P. Kingma and J. Ba, "Adam: a method for stochastic optimization," in Proc. ICLR, 2015.
-28. A. Paszke et al., "PyTorch: an imperative style, high-performance deep learning library," in Proc. NeurIPS, 2019.
-29. flash-linear-attention, https://github.com/fla-org/flash-linear-attention
-30. G. Draper-Gil, A. H. Lashkari, M. S. I. Mamun, and A. A. Ghorbani, "Characterization of encrypted and VPN traffic using time-related features," in Proc. ICISSP, 2016.
-31. A. H. Lashkari, G. Draper-Gil, M. S. I. Mamun, and A. A. Ghorbani, "Characterization of Tor traffic using time-based features," in Proc. ICISSP, 2017.
-32. W. Wang, M. Zhu, J. Wang, X. Zeng, and Z. Yang, "End-to-end encrypted traffic classification with one-dimensional convolution neural networks," in Proc. IEEE ISI, 2017.
+[1] G K Kulatilleke, S Layeghy, M Baktashmotlagh, and M Portmann, "MambaNetBurst: direct byte-level network traffic classification without tokenization or pretraining," arXiv:260511034, 2026; [2] A Gu and T Dao, "Mamba: linear-time sequence modeling with selective state spaces," arXiv:231200752, 2023; [3] T Dao and A Gu, "Transformers are SSMs: generalized models and efficient algorithms through structured state space duality," in Proc ICML, 2024; [4] S Yang, J Kautz, and A Hatamizadeh, "Gated delta networks: improving Mamba2 with the delta rule," in Proc ICLR, 2025; [5] A Vaswani et al, "Attention is all you need," in Proc NeurIPS, 2017; [6] L Xue et al, "ByT5: towards a token-free future with pre-trained byte-to-byte models," TACL, vol 10, 2022; [7] X Lin, G Xiong, G Gou, Z Li, J Shi, and J Yu, "ET-BERT: a contextualized datagram representation with pre-training transformers for encrypted traffic classification," in Proc WWW, 2022; [8] R Zhao, M Zhan, X Deng, Y Wang, Y Wang, G Gui, and Z Xue, "Yet another traffic classifier (YaTC): a masked autoencoder for flow images," arXiv:230519077, 2023; [9] NetMamba: efficient network traffic classification via pre-training unidirectional Mamba, arXiv:240511886, 2024; [10] netFound: foundation model for network security, arXiv:231017025, 2023, revised 2026; [11] J Snell, K Swersky, and R Zemel, "Prototypical networks for few-shot learning," in Proc NeurIPS, 2017; [12] W J Scheirer, A de Rezende Rocha, A Sapkota, and T E Boult, "Toward open set recognition," IEEE TPAMI, vol 35, no 7, 2013; [13] A Bendale and T E Boult, "Towards open set deep networks," in Proc IEEE CVPR, 2016; [14] N Jacobs et al, "AI/ML for network security: the emperor has no clothes," in Proc ACM CCS, 2022; [15] R Zhao et al, "The sweet danger of sugar: the pitfalls of pcap-based encoders," in Proc ACM SIGCOMM, 2025, arXiv:250716438; [16] NetBench: a benchmark for network traffic classification, in Proc ACM FMSys, 2024; [17] M Zalewski, "p0f v3," https://lcamtufcoredumpcx/p0f3/; [18] J Althouse, "TLS fingerprinting with JA3 and JA3S," Salesforce Engineering, 2017; [19] L Deri, M Martinelli, T Bujlow, and A Cardigliano, "nDPI: open-source high-speed deep packet inspection," in Proc IEEE IWCMC, 2014; [20] A Sivanathan, H H Gharakheili, F Loi, A Radford, C Wijenayake, A Vishwanath, and V Sivaraman, "Characterizing and classifying IoT traffic in smart cities and campuses," in Proc IEEE INFOCOM Workshops, 2017; [21] M Miettinen, S Marchal, I Hafeez, N Asokan, A-R Sadeghi, and S Tarkoma, "IoT Sentinel: automated device-type identification for security enforcement in IoT," in Proc IEEE ICDCS, 2017; [22] R Sommer and V Paxson, "Outside the closed world: on using machine learning for network intrusion detection," in Proc IEEE S&P, 2010; [23] T Chen, S Kornblith, M Norouzi, and G Hinton, "A simple framework for contrastive learning of visual representations," in Proc ICML, 2020; [24] Y Ganin et al, "Domain-adversarial training of neural networks," JMLR, vol 17, no 59, 2016; [25] R J Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," Machine Learning, vol 8, 1992; [26] I Loshchilov and F Hutter, "Decoupled weight decay regularization," in Proc ICLR, 2019; [27] D P Kingma and J Ba, "Adam: a method for stochastic optimization," in Proc ICLR, 2015; [28] A Paszke et al, "PyTorch: an imperative style, high-performance deep learning library," in Proc NeurIPS, 2019; [29] flash-linear-attention, https://githubcom/fla-org/flash-linear-attention; [30] G Draper-Gil, A H Lashkari, M S I Mamun, and A A Ghorbani, "Characterization of encrypted and VPN traffic using time-related features," in Proc ICISSP, 2016; [31] A H Lashkari, G Draper-Gil, M S I Mamun, and A A Ghorbani, "Characterization of Tor traffic using time-based features," in Proc ICISSP, 2017; [32] W Wang, M Zhu, J Wang, X Zeng, and Z Yang, "End-to-end encrypted traffic classification with one-dimensional convolution neural networks," in Proc IEEE ISI, 2017.
 
 ## Appendix A: Label Set
 
