@@ -37,3 +37,10 @@ X, LinkedIn, Hacker News, Reddit, 知乎 and FreeBuf were excluded by request. T
 4. Kaggle. A notebook that loads the weights and runs the CLI on a synthetic capture.
 5. Dev.to and 掘金. One article each, the audit story rather than the model story.
 6. V2EX. Short post, link to the landing page, expect hard questions and answer them.
+
+## Journal submission
+
+Submitted to Computer Engineering (ISSN 1000-3428) on 2026-10-26 through JournalX,
+column 网络空间安全. The upload form accepts only rar|doc|zip, so the DOCX was delivered
+inside IntraSpanNet-zh-doc.zip. The system record and the full metadata are in
+docs/SUBMISSION-RECORD.md.
