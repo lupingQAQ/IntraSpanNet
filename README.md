@@ -11,6 +11,8 @@ IntraSpanNet identifies security products and services from the first five packe
 - Report: [docs/RESULTS.md](docs/RESULTS.md)
 - Benchmark audit: [docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
 
+**DOI:** [10.5281/zenodo.23643146](https://zenodo.org/records/23643146)
+
 ## What it does
 
 Input: one unidirectional flow, represented as the first 5 packets, 320 bytes per packet (80 bytes of IPv4 and L4 headers, 240 bytes of payload), for a total of 1600 bytes. IPv4 source and destination addresses are zeroed.

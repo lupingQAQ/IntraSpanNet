@@ -18,6 +18,8 @@ metrics:
   - auroc
 ---
 
+DOI: 10.5281/zenodo.23643146 (https://zenodo.org/records/23643146)
+
 # IntraSpanNet
 
 IntraSpanNet identifies security products and services from the first five packets of a network flow. It reports a product label, a type, a tier, and an open-set distance. Flows that do not match a known product are rejected as unknown.

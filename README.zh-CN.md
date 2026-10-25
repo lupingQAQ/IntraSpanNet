@@ -10,6 +10,8 @@ IntraSpanNet 从一条流的前 5 个包识别安全产品与服务，输出产�
 - 技术报告：[docs/RESULTS.md](docs/RESULTS.md)
 - 基准审计：[docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
 
+**DOI:** [10.5281/zenodo.23643146](https://zenodo.org/records/23643146)
+
 ## 能力
 
 输入为一条单向流，取前 5 个包，每包 320 字节，共 1600 字节。每包由 80 字节 IPv4 与传输层头、240 字节载荷组成。IPv4 源地址与目的地址置零。
