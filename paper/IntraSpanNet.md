@@ -1,6 +1,6 @@
 # IntraSpanNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning
 
-Luping QAQ, Independent Researcher
+luping, Independent Researcher
 
 ## Abstract
 
@@ -228,9 +228,44 @@ A timing rule over inter-arrival times raises the acceptance figure from 8 to 9 
 
 The probe captures faster than the 253-flow/s ensemble classifies, so a deployment must sample, shard across several devices, or classify on demand, and an 8 GB card retains headroom at batch 128 with 3.40 GB of peak VRAM [28], [29]. The distilled student reaches 1,011 flows/s at 0.8231 validation accuracy, 5.6 points below the ensemble, and is kept experimental for that reason [23].
 
-### V-D Ablations and variants that did not ship
+### V-D Public split audit
 
-*TABLE IX. Variants and ablations.*
+| Benchmark | Train | Test | Train present in test | Share of test | Clean test |
+|---|---:|---:|---:|---:|---:|
+| ISCXVPN2016 | 13,281 | 1,384 | 1,106 | 79.9% | 278 |
+| ISCXTor2016 | 11,655 | 1,458 | 0 | 0% | 1,458 |
+| USTC-TFC2016 | 37,323 | 6,662 | 5,605 | 84.1% | 1,057 |
+| CICIoT2022 | 18,734 | 1,951 | 1,571 | 80.5% | 380 |
+| CrossPlatform-Android | 44,700 | 4,656 | 3,733 | 80.2% | 923 |
+| CrossPlatform-iOS | 40,379 | 4,205 | 3,396 | 80.8% | 809 |
+
+*TABLE IX. Exact byte-level train/test overlap in six public benchmarks.*
+
+Every flow was hashed twice, once over the PNG file bytes and once over the decoded grayscale pixels, and the two hashes agree on all 250,072 flows. A duplicate is an exact byte match at the 1,600-byte input unit, not a near match. Five of the six splits place about 80% of their test flows in the training set, which means a score computed on those splits measures recall of training data rather than generalisation [14], [15], [16]. ISCXTor2016 duplicates nothing and is the only split in the set whose test figure carries its usual meaning.
+
+Label conflicts across splits are zero and every duplicate stays inside its class, which is consistent with independent sampling from one flow pool without cross-split deduplication. The finding is not universal: the Lens official splits carry 7.0% to 17.2% burst overlap on the four in-scope tasks and 0.05% to 0.5% on the two mobile tasks, with at most 57 conflicting rows against test.
+
+![Figure 2: Train/test overlap](assets/benchmark-overlap.svg)
+
+*Fig. 2. Exact byte-level train/test overlap in the six audited benchmarks.*
+
+### V-E Deduplicated evaluation
+
+| Item | VPN | USTC | CIoT |
+|---|---:|---:|---:|
+| Clean test flows | 278 | 1,057 | 380 |
+| Accuracy on clean set | 0.9376 | 0.9981 | 0.9868 |
+| Macro-F1 on clean set | 0.9418 | 0.9671 | 0.9823 |
+| Full-set macro-F1 | 0.9861 | 0.9949 | 0.9965 |
+| Drop | 4.4 pp | 2.8 pp | 1.4 pp |
+
+*TABLE X. Re-evaluation on the deduplicated subsets of three affected benchmarks.*
+
+Re-scoring on the clean subsets costs 4.4 points of macro-F1 on VPN, 2.8 on USTC and 1.4 on CIoT. The leak therefore inflated the reported scores without accounting for all of them, which is itself evidence that the model learned something beyond the duplicated flows. Both figures are reported for the three benchmarks that were rerun; the other three were not rerun and neither figure is claimed for them.
+
+### V-F Ablations and variants that did not ship
+
+*TABLE XI. Variants and ablations.*
 
 | Variant | Result | Decision |
 |---|---|---|
@@ -278,7 +313,7 @@ The Gated DeltaNet kernel is taken from flash-linear-attention [29], and the pub
 
 ## Appendix A: Label Set
 
-*TABLE X. The 18 products and services used as the closed label set, with type and tier.*
+*TABLE XII. The 18 products and services used as the closed label set, with type and tier.*
 
 | Product | Type | Tier |
 |---|---|---|
