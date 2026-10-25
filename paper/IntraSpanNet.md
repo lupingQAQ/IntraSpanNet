@@ -277,6 +277,10 @@ Re-scoring on the clean subsets costs 4.4 points of macro-F1 on VPN, 2.8 on USTC
 
 Auxiliary pre-training is the one that looked most promising, and it raised the probe score by 9.35 points before losing to the plain E0-plus-LDA pipeline downstream, which is why it was dropped rather than tuned [6], [23]. Depth, width, state size, embedding dimension, and packet budget were fixed once from the deployment constraint and the MambaNetBurst reference rather than swept, so the available compute went to the 264-bin acceptance set and the end-to-end service check instead [1], [3].
 
+### V-G Baseline under a capture-level split
+
+To place the tool against a model-free reference, a 256-bin byte histogram with a linear classifier was trained on USTC-TFC2016. Splitting flows at random, the same pipeline reaches 1.0000 accuracy, which is the artefact described in Section V-D. Splitting whole captures instead, 7 for training and 4 for testing, it reaches 0.7766 accuracy and 0.4998 macro-F1 over 1,105 flows. The difference between the two figures, rather than either figure alone, is the result that matters: a linear model with no capacity to memorise reproduces the leakage effect on a third dataset, so the audit's finding does not depend on the capacity of the classifier under test.
+
 ## VI Discussion
 
 ### VI-A Five packets are enough because the handshake is where the product signs itself.
