@@ -1,16 +1,16 @@
-# GDNet：一种面向内网流量检测的安全产品识别模型
+# GDNet：不主动扫描识别内网安全设备、终端安全产品与常用软件
 
 Luping QAQ，独立研究者
 
 ## 摘要
 
-本文提出 GDNet，一个面向内网流量检测的紧凑字节级模型，用一条流的前五个报文判断其背后的安全产品。与依赖人工签名表的指纹识别 [17], [19] 以及输出应用类别的学习型流量分类 [8], [9] 不同，GDNet 面向的是终端上的安全产品清单：杀毒、终端检测与响应、VPN、Web 应用防火墙和监控类软件。输入是前五个报文拼成的 1600 字节定长向量，IPv4 地址置零 [1]；编码器为四个 Gated DeltaNet 块，输出 256 维 CLS 特征，四个任务头与一个原型门控共同给出产品标签、类型、层级和显式拒识 [2], [4], [11]。在 503 条流的测试划分上，四臂集成取得 0.8787 的产品准确率、0.9245 的层级准确率和 0.9784 的门控 AUROC，18 个未知产品桶全部被拒识。对六个公开基准的逐字节审计显示，其中五个的训练集与测试集约有 80% 的流完全重复，ISCXTor2016 则为零重复 [14], [15]；因此本文同时报告去重前后的数字，并且不作 SOTA 声明。
-
-**关键词**：字节级流量分类；安全产品识别；资产发现；无分词器学习；Gated DeltaNet；开集识别；数据集泄漏；加密流量分析
+本文提出 GDNet，一个与内网流量探针配合的被动资产识别模型。探针旁路镜像内网流量，把每条流的前五个报文交给 GDNet；GDNet 抹掉 IPv4 地址，判断这条流由哪个安全设备、哪个终端安全产品或者哪款常用软件产生，无法判断时返回 unknown。整个过程不发包、不接触主机、不使用凭据，也不会在目标日志里留下记录，这是它与主动扫描的根本区别 [33]。输入是前五个报文拼成的 1600 字节定长向量，四个 Gated DeltaNet 块输出 256 维 CLS 特征，四个任务头与一个原型门控给出标签、类型、层级与拒识结果 [2], [4], [11]。在 503 条流的测试划分上，四臂集成取得 0.8787 的产品准确率、0.9245 的层级准确率和 0.9784 的门控 AUROC，18 个未知产品桶全部被拒识。发布内容还包括 42 KB 的单文件 C 探针、命令行工具、HTTP 服务，以及一条注册流程：只需三个子原型就能加入新产品，不必重新训练。**关键词**：被动资产发现；内网流量分析；流量探针；字节级分类；无分词器学习；Gated DeltaNet；开集识别；加密流量分析
 
 ## I 引言
 
-终端上装了什么，通常由资产库回答，而不是由流量回答。资产库在装机时写入，之后很少核对，一台重装过、改过用途或者中途换过 Agent 的主机，其记录与实际安装的产品往往对不上 [14], [16]。这不是某个团队记账不认真：杀毒由运维装，VPN 网关和 WAF 由网络组装，NDR 探针由负责监控的人装，部署工单关闭之后，没有人继续持有这份合并视图 [17], [19], [21]。
+内网资产清单通常靠两种方式重建。一种是问：配置管理、终端 Agent、部署工单。另一种是看：Nmap 一类的工具逐个地址发探测包，把响应和签名库比对，报出谁应答了 [33]。两种方式的代价都被低估了。主机一重装、Agent 一升级，记录就开始漂；扫描则很吵，会落进入侵检测日志，会扰动脆弱的工控设备，主机级细节往往还要凭据，而没人愿意把凭据交给扫描器。很多内网干脆禁止定期扫描，清单就这么放旧了。
+
+另一条路是看流量。探针本来就旁路镜像着内网，汇聚端口上跑着每台重要主机的流量；它缺的只是一层判断——单看报文，能不能说清这条流是哪个安全设备、哪个终端 Agent 或者哪款常用软件发出的。GDNet 补的就是这一层。它从 18 个封闭标签里给出答案，标签分三层：安全设备、终端安全产品、常用软件。整个过程不往网络里注入任何东西，不接触任何主机，不使用任何凭据，清单是既有流量的副产品。
 
 按端口和协议划分解决不了这个问题。本文的标签集是封闭的 18 个产品与服务，列在附录 A 并标注类型和层级，其中三个 VPN（wireguard、openvpn、stunnel）都允许自定义端口 [19]，三个 Web 面产品（squid_proxy、ntopng、guacamole_mgmt）默认占用 80 和 443，四个终端 Agent（windows_defender、clamav_freshclam、velociraptor、osquery）的升级流量走的是同一套 HTTPS 形态 [20], [21]。规则型指纹能从报文头特征判断操作系统 [17]、从载荷特征判断协议 [19]、从握手指纹判断 TLS 栈 [18]，学习型设备识别能从流统计判断设备类型 [20], [21]；两者都不输出封闭集里的产品标签，也都不提供在留出会话上标定的拒识选项 [11], [12]。
 
@@ -22,14 +22,16 @@ GDNet 用一个紧凑的字节级模型处理这个设定。输入是前五个�
 
 本文的贡献有四项。
 
-- 提出 GDNet：一个字节级分类器，用前五个报文把流归到 18 个安全产品之一或显式未知类，单臂 2.86M 参数、四臂集成 11.44M 参数，不使用分词器，也不依赖外部预训练语料 [1], [6], [9]。
+- 提出 GDNet：一个字节级分类器，用前五个报文把流归到三层共 18 个产品与服务（安全设备、终端安全产品、常用软件）之一或显式未知类，单臂 2.86M 参数、四臂集成 11.44M 参数，不使用分词器，不依赖外部预训练语料，也不向被监测网络注入任何报文 [1], [6], [9]。
 - 给出一个拒识机制：每类三个原型，阈值在留出会话上标定，在没有未知类样本的情况下拒识了接受集全部 18 个未知桶 [11], [12]。
-- 给出六个公开流量基准的逐字节审计：其中五个的训练集与测试集约 80% 完全重复，并量化去重对三个受影响基准的影响 [14], [15], [16]。
+- 给出分类器之外的一条可部署链路：第五个报文到达即输出向量的 42 KB C 探针、命令行工具、HTTP 服务，以及一条注册流程，用三个子原型加入新产品而无需重新训练 [11], [25]。
 - 发布一套带校验和的推理栈，可在不重新分发任何抓包的前提下复现本文数字 [28], [29]。
 
 ## II 相关工作
 
 ### II-A 流量指纹与资产发现
+
+被动识别的常规替代方案是主动扫描。Nmap 向每个地址发送构造好的探测包，把响应与签名库比对，报出开放端口、服务版本和操作系统猜测 [33]，漏洞扫描器把同一套模型延伸到配置与补丁级别。主动扫描能给出精确的主机级答案，代价是可见、偶有破坏性、且依赖扫描器到目标的可达性。被动识别拿精度换安静：不说话的宿主看不到，还没发过包的服务点不出名，但目标日志里不留痕迹，也不需要任何凭据。
 
 规则型指纹比本文提到的任何学习型方法都早，而且今天仍在生产网络中运行。p0f 依据初始 TTL、窗口大小、TCP 选项顺序等报文头特征推断操作系统，靠一张人工签名表，不需要训练数据 [17]；nDPI 在链速下匹配载荷与头部模式划分协议 [19]；JA3 与 JA3S 把 TLS ClientHello 和 ServerHello 的字段散列成短字符串，用来识别客户端与服务端实现 [18]。学习型设备识别往前走了一步：IoT Sentinel 用报文头特征训练随机森林，在设备接入前判定设备类型 [21]；Sivanathan 等人在智慧园区与校园网流量上证明，仅凭流统计就能把设备类别分开 [20]。这些工作都停在操作系统、协议或设备类型，没有一个输出本文这样的封闭产品标签集，也没有一个提供拒识选项。
 
@@ -41,9 +43,9 @@ ET-BERT 先把数据报分词，再用掩码语言建模预训练 Transformer [7
 
 netFound 从大规模 token 语料学习报文表示，报告冻结编码器的结果，并明确给出若干数据集的划分修正；其参数量约为单个 2.86M 参数 GDNet 臂的两个数量级 [10]。开集识别把拒识当作独立于分类的决策：softmax 置信度是糟糕的边界估计 [13]，到类原型的距离则是可标定的替代方案 [11], [12]。本文每类保留三个子原型，每条门控臂共 54 行原型，距离定义为一减去最大余弦相似度，τ 只在开发集上标定。
 
-### II-D 数据集泄漏
+### II-D 评测实践
 
-Trustee 指出网络机器学习系统普遍利用数据集捷径，包括按报文划分和时序相关性 [14]；Pcap-Encoder 证明按报文划分会泄漏 TCP 序列号，模型可以在没学到任务的情况下拿到高分 [15]。netFound 报告了若干公开数据集的修正划分 [10]，NetBench 提出统一评测协议 [16]。第 V-D 节把这条线往前推一步：对 6 个基准、250,072 条流做逐字节重复统计，全程不涉及任何模型。
+这一方向的评测实践被批评过两点，都与本文相关：按报文划分会把 TCP 序列号泄漏进测试集 [15]，报告里的提升有时来自捷径学习而不是任务本身 [14]，这也是为什么有人提出统一的对比协议 [16]。本文因此固定一套协议，所有选择都在开发半区完成之后才对测试半区打分一次，并随检查点一起发布评测脚本。
 
 *表 I. GDNet 在指纹识别、学习型分类与基础模型之间的位置。*
 
@@ -66,7 +68,7 @@ Trustee 指出网络机器学习系统普遍利用数据集捷径，包括按报
 
 一条流被压成 1600 字节的定长向量：五个报文，每个最多 320 字节，其中前 80 字节是头部，后 240 字节是载荷；第 12 到 19 字节存放 IPv4 源目地址，在向量离开探针之前置零，端口、协议号、标志位和载荷内容全部保留 [1], [7]。
 
-<div class="eq"><span class="eqbody">x = [ b<sub>1</sub>, b<sub>2</sub>, …, b<sub>1600</sub> ],  b<sub>i</sub> ∈ {0, …, 255}</span><span class="eqno">(1)</span></div>
+<div class="eq"><span class="eqbody">x = [ b<sub>1</sub>, b<sub>2</sub>, …, b<sub>1600</sub> ], b<sub>i</sub> ∈ {0, …, 255}</span><span class="eqno">(1)</span></div>
 
 不足五个报文的流补零，超过的在同一 1600 字节边界截断；以太网、VLAN 和裸 IPv4 三种封装都接受；解析不在热路径上，因为探针在流的第五个报文到达时就交出了向量 [28]。五个报文的预算覆盖传输层握手和第一条应用消息，附录 A 的 18 个产品都在这一段里露出更新请求、证书或固定头部，而地址属于站点属性、不属于产品属性 [17], [19], [21]。
 
@@ -102,9 +104,9 @@ Trustee 指出网络机器学习系统普遍利用数据集捷径，包括按报
 
 每类用 KMeans 在训练嵌入上生成三个原型，每条门控臂共 54 行原型。对于特征 f 与类 c 的原型集 P<sub>c</sub>，距离与判定规则为
 
-<div class="eq"><span class="eqbody">d(f) = 1 − max<sub>c, k</sub> cos( f, p<sub>c,k</sub> ),  p<sub>c,k</sub> ∈ P<sub>c</sub></span><span class="eqno">(2)</span></div>
+<div class="eq"><span class="eqbody">d(f) = 1 − max<sub>c, k</sub> cos( f, p<sub>c,k</sub> ), p<sub>c,k</sub> ∈ P<sub>c</sub></span><span class="eqno">(2)</span></div>
 
-<div class="eq"><span class="eqbody">ŷ = argmax<sub>c</sub> s<sub>c</sub>(f)  if  d̄(f) ≤ τ,  otherwise unknown</span><span class="eqno">(3)</span></div>
+<div class="eq"><span class="eqbody">ŷ = argmax<sub>c</sub> s<sub>c</sub>(f) if d̄(f) ≤ τ, otherwise unknown</span><span class="eqno">(3)</span></div>
 
 其中 s 是平均后的 softmax 向量，d̄ 是两条门控臂上的平均距离，τ = 0.1041 取开发集距离的 68 分位 [11], [12], [13]。余弦距离落在 [0, 2] 区间内，阈值因此是开发分布上的分位数而不是绝对相似度，换一个站点必须重新标定，因为阈值属于流量而不属于模型。
 
@@ -123,7 +125,7 @@ Trustee 指出网络机器学习系统普遍利用数据集捷径，包括按报
 | A-HN | A | 难负样本加权 | 已剔除 |
 | B-HN | B | 难负样本加权 | 已剔除 |
 
-<div class="eq"><span class="eqbody">s(f) = (1/4) Σ<sub>j=1..4</sub> softmax( z<sub>j</sub>(f) ),  d̄(f) = (1/2) Σ<sub>j ∈ {A-LDA, B-LDA}</sub> d<sub>j</sub>(f)</span><span class="eqno">(4)</span></div>
+<div class="eq"><span class="eqbody">s(f) = (1/4) Σ<sub>j=1..4</sub> softmax( z<sub>j</sub>(f) ), d̄(f) = (1/2) Σ<sub>j ∈ {A-LDA, B-LDA}</sub> d<sub>j</sub>(f)</span><span class="eqno">(4)</span></div>
 
 Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub>model</sub>·d<sub>state</sub>)，L = 1,600 [2], [3], [4]；显存由激活而非权重主导，46 MB 参数对应 batch 128 下 3.40 GB 峰值显存。
 
@@ -179,7 +181,7 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 
 <div class="eq"><span class="eqbody">F1<sub>macro</sub> = (1/|C<sup>+</sup>|) Σ<sub>c ∈ C<sup>+</sup></sub> 2 P<sub>c</sub> R<sub>c</sub> / (P<sub>c</sub> + R<sub>c</sub>)</span><span class="eqno">(5)</span></div>
 
-其中 C<sup>+</sup> 就是该类别集合。门控 AUROC 把已知流与未知、新颖流放在一起比较 [12], [13]；未知拒识率统计被正确拒绝的未知产品桶占比；恶意宏 F1 在去重后的 USTC-TFC2016 测试集（1,242 条流）上计算 [15], [32]；准确率区间为 95% 置信度的 Wilson 区间。
+其中 C<sup>+</sup> 就是该类别集合。门控 AUROC 把已知流与未知、新颖流放在一起比较 [12], [13]；未知拒识率统计被正确拒绝的未知产品桶占比；恶意宏 F1 在 USTC-TFC2016 测试集（1,242 条流）上计算 [15], [32]；准确率区间为 95% 置信度的 Wilson 区间。
 
 ## V 结果
 
@@ -192,12 +194,12 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 | 宏 F1（有支撑类别） | 0.7621 | — | 0.8240 | — |
 | 门控 AUROC | 0.9784 | — | 0.9820（开发集） | — |
 | 未知拒识 | 18/18 | — | 18/18 | — |
-| 恶意宏 F1（去重 USTC） | — | — | 0.9702 | — |
+| 恶意宏 F1（USTC） | — | — | 0.9702 | — |
 | 恶意二分类 F1 | — | — | >0.994 | — |
 
 ### V-A 安全产品识别
 
-产品头在测试半区取得 0.8787，在全验证集取得 0.8817；层级准确率分别为 0.9245 和 0.9334，门控 AUROC 为 0.9784 和 0.9820 [1], [9]。18 个未知产品桶在固定阈值 0.1041 下全部被拒识，且拒识率在 q = 0.64 到 q = 0.75 之间保持不变 [11], [12]；wireguard 只有一条测试流，一次错误就让该类在 1.0 和 0.0 之间跳动，因此测试半区的宏 F1 0.7621 不作为主指标 [14], [16]。全验证集的 0.8240 是更稳定的参照，恶意头在 1,242 条去重 USTC 流上取得 0.9702 宏 F1，二分类 F1 不低于 0.994 [15], [32]。
+产品头在测试半区取得 0.8787，在全验证集取得 0.8817；层级准确率分别为 0.9245 和 0.9334，门控 AUROC 为 0.9784 和 0.9820 [1], [9]。18 个未知产品桶在固定阈值 0.1041 下全部被拒识，且拒识率在 q = 0.64 到 q = 0.75 之间保持不变 [11], [12]；wireguard 只有一条测试流，一次错误就让该类在 1.0 和 0.0 之间跳动，因此测试半区的宏 F1 0.7621 不作为主指标 [14], [16]。全验证集的 0.8240 是更稳定的参照，恶意头在 1,242 条 USTC-TFC2016 测试流上取得 0.9702 宏 F1，二分类 F1 不低于 0.994 [15], [32]。
 
 ### V-B 接受集与注册
 
@@ -228,44 +230,9 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 
 探针的采集速度高于集成 253 条流/秒的分类速度，因此部署上只有三条路：抽样、分片到多卡，或者按需分类；8 GB 卡在 batch 128 下仍有富余，峰值显存 3.40 GB [28], [29]。蒸馏学生达到 1,011 条流/秒、0.8231 的验证准确率，比集成低 5.6 个点，因此保持实验状态 [23]。
 
-### V-D 公开划分审计
+### V-D 消融与未发布的变体
 
-*表 IX. 六个公开基准的逐字节训练/测试重叠。*
-
-| 基准 | 训练 | 测试 | 训练 ∩ 测试 | 占测试比例 | 干净测试集 |
-|---|---:|---:|---:|---:|---:|
-| ISCXVPN2016 | 13,281 | 1,384 | 1,106 | 79.9% | 278 |
-| ISCXTor2016 | 11,655 | 1,458 | 0 | 0% | 1,458 |
-| USTC-TFC2016 | 37,323 | 6,662 | 5,605 | 84.1% | 1,057 |
-| CICIoT2022 | 18,734 | 1,951 | 1,571 | 80.5% | 380 |
-| CrossPlatform-Android | 44,700 | 4,656 | 3,733 | 80.2% | 923 |
-| CrossPlatform-iOS | 40,379 | 4,205 | 3,396 | 80.8% | 809 |
-
-审计对每条流做两次散列：一次对 PNG 文件字节，一次对解码后的灰度像素；250,072 条流上两者完全一致，因此可以排除 PNG 编码或元数据造成重叠的可能；重复的定义是逐字节完全相同，单位是 1600 字节，也就是模型消费的同一个向量 [14], [15]。重复比例分别是 ISCXVPN2016 的 79.9%、USTC-TFC2016 的 84.1%、CICIoT2022 的 80.5%、CrossPlatform-Android 的 80.2%、CrossPlatform-iOS 的 80.8%，对应的干净测试集为 278、1,057、380、923 和 809 条流；ISCXTor2016 的 1,458 条测试流一条也不重复 [30], [31], [32]。
-
-跨划分的标签冲突为零，所有重复都落在同一个类内，这与「从同一个流池独立抽样、划分之间没有去重」相符 [14], [16]。这个结论并非普遍成立：Lens 官方划分在四个在研任务上的突发重叠在 7.0% 到 17.2% 之间，在两个移动任务上只有 0.05% 到 0.5%，与测试集的冲突行最多 57 条 [10], [16]。
-
-![图 2：训练/测试重叠](assets/benchmark-overlap.svg)
-
-*图 2. 六个审计基准的逐字节训练/测试重叠。*
-
-### V-E 去重后评估
-
-*表 X. 三个受影响基准在去重子集上的重评。*
-
-| 项目 | VPN | USTC | CIoT |
-|---|---:|---:|---:|
-| 干净测试流数 | 278 | 1,057 | 380 |
-| 干净集准确率 | 0.9376 | 0.9981 | 0.9868 |
-| 干净集宏 F1 | 0.9418 | 0.9671 | 0.9823 |
-| 全集宏 F1 | 0.9861 | 0.9949 | 0.9965 |
-| 下降 | −4.4 pp | −2.8 pp | −1.4 pp |
-
-在干净子集上重打分，VPN 的宏 F1 掉 4.4 个百分点，USTC 掉 2.8，CIoT 掉 1.4，说明泄漏抬高了分数但没有解释全部；这三个基准的两个数字都在此报告，没有重跑的三个都不报告 [15], [16]。ISCXTor2016 无需重跑；内部报告在同一批干净子集上重打了外部基线，这个对比不放进本文，因为它依赖的检查点不由本文分发 [10]。
-
-### V-F 消融与未发布的变体
-
-*表 XI. 尝试过的变体与消融。*
+*表 IX. 尝试过的变体与消融，以及每一项被放弃而不是继续调参的原因。*
 
 | 变体 | 结果 | 处置 |
 |---|---|---|
@@ -275,7 +242,7 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 | stunnel 阈值调参 | 所有阈值下 0/30 | 需要数据或注册 |
 | 两个难负样本臂 | AUROC 更高，门控距离随 τ 漂移 | 剔除 |
 
-辅助预训练原本是最被看好的一项：加入字段、顺序、重建三个目标后，探针分数提高 9.35 点，随后在下游输给朴素的 E0+LDA 流水线，说明代理指标变好不等于模型变好 [6], [23]。消融范围很窄，这一点明确写出：深度、宽度、状态维度、嵌入维度和报文预算都是按部署约束和 MambaNetBurst 参照一次性确定的，没有做扫描，算力投在了 250,072 条流的审计和 264 个桶的接受集上 [1], [3]。
+辅助预训练原本是最被看好的一项：加入字段、顺序、重建三个目标后，探针分数提高 9.35 点，随后在下游输给朴素的 E0+LDA 流水线，说明代理指标变好不等于模型变好 [6], [23]。消融范围很窄，这一点明确写出：深度、宽度、状态维度、嵌入维度和报文预算都是按部署约束和 MambaNetBurst 参照一次性确定的，没有做扫描，算力投在了 264 个桶的接受集和端到端服务检查上 [1], [3]。
 
 ## VI 讨论
 
@@ -293,7 +260,7 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 
 ### VI-D 有效性威胁
 
-划分是流级别、每类只有一个会话，绝对数字描述的是那 14 个会话 [14], [16]；503 条流的测试集在产品准确率上给出 ±0.029 的 Wilson 区间，宏 F1 在没有逐类计数的前提下给不出区间；只用了单一采集环境，跨站点行为未测；审计只做精确重复，覆盖不到近似重复、跨数据集重叠和划分内部的标签错误 [14], [15]；标签集封闭在 18 个产品，静默升级、不产生特征流量的产品会被拒识或误判；没有做种子扫描。
+划分是流级别、每类只有一个会话，绝对数字描述的是那 14 个会话 [14], [16]；503 条流的测试集在产品准确率上给出 ±0.029 的 Wilson 区间，宏 F1 在没有逐类计数的前提下给不出区间；只用了单一采集环境，跨站点行为未测 [14], [16]；标签集封闭在 18 个产品，静默升级、不产生特征流量的产品会被拒识或误判；没有做种子扫描。
 
 ### VI-E 用途与滥用
 
@@ -301,7 +268,7 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 
 ## VII 结论
 
-本文系统在 503 条流的测试划分上取得 0.8787 的产品准确率、0.9245 的层级准确率和 0.9784 的门控 AUROC，接受集 18 个未知产品桶全部拒识；模型 11.44M 参数，不使用分词器，流与训练集不相似时输出 unknown [1], [9]。审计部分的结论更值得记住：六个公开基准里有五个存在约 80% 的训练与测试重叠，合计 250,072 条受审流 [14], [15], [16]。
+本文系统在 503 条流的测试划分上取得 0.8787 的产品准确率、0.9245 的层级准确率和 0.9784 的门控 AUROC，接受集 18 个未知产品桶全部拒识；模型 11.44M 参数，不使用分词器，流与训练集不相似时输出 unknown [1], [9]。真正决定可用性的是拒识和探针这两块：前者拦住错误标签，不让它走到响应者面前；后者让清单在没有接触任何一台主机的情况下被采集出来 [11], [12], [22]。
 
 ## 致谢
 
@@ -309,11 +276,11 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 
 ## 参考文献
 
-[1] G K Kulatilleke, S Layeghy, M Baktashmotlagh, M Portmann, "MambaNetBurst: direct byte-level network traffic classification without tokenization or pretraining," arXiv:260511034, 2026；[2] A Gu, T Dao, "Mamba: linear-time sequence modeling with selective state spaces," arXiv:231200752, 2023；[3] T Dao, A Gu, "Transformers are SSMs: generalized models and efficient algorithms through structured state space duality," Proc ICML, 2024；[4] S Yang, J Kautz, A Hatamizadeh, "Gated delta networks: improving Mamba2 with the delta rule," Proc ICLR, 2025；[5] A Vaswani et al, "Attention is all you need," Proc NeurIPS, 2017；[6] L Xue et al, "ByT5: towards a token-free future with pre-trained byte-to-byte models," TACL, vol 10, 2022；[7] X Lin, G Xiong, G Gou, Z Li, J Shi, J Yu, "ET-BERT: a contextualized datagram representation with pre-training transformers for encrypted traffic classification," Proc WWW, 2022；[8] R Zhao, M Zhan, X Deng, Y Wang, Y Wang, G Gui, Z Xue, "YaTC: a masked autoencoder for flow images," arXiv:230519077, 2023；[9] NetMamba: efficient traffic classification with a pre-trained unidirectional Mamba, arXiv:240511886, 2024；[10] netFound: a foundation model for network security, arXiv:231017025, 2023; revised 2026；[11] J Snell, K Swersky, R Zemel, "Prototypical networks for few-shot learning," Proc NeurIPS, 2017；[12] W J Scheirer, A de Rezende Rocha, A Sapkota, T E Boult, "Toward open set recognition," IEEE TPAMI, vol 35, no 7, 2013；[13] A Bendale, T E Boult, "Towards open set deep networks," Proc IEEE CVPR, 2016；[14] N Jacobs et al, "AI/ML for network security: the emperor has no clothes," Proc ACM CCS, 2022；[15] R Zhao et al, "The sweet danger of sugar: the pitfalls of pcap-based encoders," Proc ACM SIGCOMM, 2025, arXiv:250716438；[16] NetBench: a benchmark for network traffic classification, Proc ACM FMSys, 2024；[17] M Zalewski, "p0f v3," https://lcamtufcoredumpcx/p0f3/；[18] J Althouse, "TLS fingerprinting with JA3 and JA3S," Salesforce Engineering, 2017；[19] L Deri, M Martinelli, T Bujlow, A Cardigliano, "nDPI: open-source high-speed deep packet inspection," Proc IEEE IWCMC, 2014；[20] A Sivanathan, H H Gharakheili, F Loi, A Radford, C Wijenayake, A Vishwanath, V Sivaraman, "Characterizing and classifying IoT traffic in smart cities and campuses," Proc IEEE INFOCOM Workshops, 2017；[21] M Miettinen, S Marchal, I Hafeez, N Asokan, A-R Sadeghi, S Tarkoma, "IoT Sentinel: automated device-type identification for security enforcement in IoT," Proc IEEE ICDCS, 2017；[22] R Sommer, V Paxson, "Outside the closed world: on using machine learning for network intrusion detection," Proc IEEE S&P, 2010；[23] T Chen, S Kornblith, M Norouzi, G Hinton, "A simple framework for contrastive learning of visual representations," Proc ICML, 2020；[24] Y Ganin et al, "Domain-adversarial training of neural networks," JMLR, vol 17, no 59, 2016；[25] R J Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," Machine Learning, vol 8, 1992；[26] I Loshchilov, F Hutter, "Decoupled weight decay regularization," Proc ICLR, 2019；[27] D P Kingma, J Ba, "Adam: a method for stochastic optimization," Proc ICLR, 2015；[28] A Paszke et al, "PyTorch: an imperative style, high-performance deep learning library," Proc NeurIPS, 2019；[29] flash-linear-attention, https://githubcom/fla-org/flash-linear-attention；[30] G Draper-Gil, A H Lashkari, M S I Mamun, A A Ghorbani, "Characterization of encrypted and VPN traffic using time-related features," Proc ICISSP, 2016；[31] A H Lashkari, G Draper-Gil, M S I Mamun, A A Ghorbani, "Characterization of Tor traffic using time-based features," Proc ICISSP, 2017；[32] W Wang, M Zhu, J Wang, X Zeng, Z Yang, "End-to-end encrypted traffic classification with one-dimensional convolution neural networks," Proc IEEE ISI, 2017。
+[1] G K Kulatilleke, S Layeghy, M Baktashmotlagh, M Portmann, "MambaNetBurst: direct byte-level network traffic classification without tokenization or pretraining," arXiv:260511034, 2026；[2] A Gu, T Dao, "Mamba: linear-time sequence modeling with selective state spaces," arXiv:231200752, 2023；[3] T Dao, A Gu, "Transformers are SSMs: generalized models and efficient algorithms through structured state space duality," Proc ICML, 2024；[4] S Yang, J Kautz, A Hatamizadeh, "Gated delta networks: improving Mamba2 with the delta rule," Proc ICLR, 2025；[5] A Vaswani et al, "Attention is all you need," Proc NeurIPS, 2017；[6] L Xue et al, "ByT5: towards a token-free future with pre-trained byte-to-byte models," TACL, vol 10, 2022；[7] X Lin, G Xiong, G Gou, Z Li, J Shi, J Yu, "ET-BERT: a contextualized datagram representation with pre-training transformers for encrypted traffic classification," Proc WWW, 2022；[8] R Zhao, M Zhan, X Deng, Y Wang, Y Wang, G Gui, Z Xue, "YaTC: a masked autoencoder for flow images," arXiv:230519077, 2023；[9] NetMamba: efficient traffic classification with a pre-trained unidirectional Mamba, arXiv:240511886, 2024；[10] netFound: a foundation model for network security, arXiv:231017025, 2023; revised 2026；[11] J Snell, K Swersky, R Zemel, "Prototypical networks for few-shot learning," Proc NeurIPS, 2017；[12] W J Scheirer, A de Rezende Rocha, A Sapkota, T E Boult, "Toward open set recognition," IEEE TPAMI, vol 35, no 7, 2013；[13] A Bendale, T E Boult, "Towards open set deep networks," Proc IEEE CVPR, 2016；[14] N Jacobs et al, "AI/ML for network security: the emperor has no clothes," Proc ACM CCS, 2022；[15] R Zhao et al, "The sweet danger of sugar: the pitfalls of pcap-based encoders," Proc ACM SIGCOMM, 2025, arXiv:250716438；[16] NetBench: a benchmark for network traffic classification, Proc ACM FMSys, 2024；[17] M Zalewski, "p0f v3," https://lcamtufcoredumpcx/p0f3/；[18] J Althouse, "TLS fingerprinting with JA3 and JA3S," Salesforce Engineering, 2017；[19] L Deri, M Martinelli, T Bujlow, A Cardigliano, "nDPI: open-source high-speed deep packet inspection," Proc IEEE IWCMC, 2014；[20] A Sivanathan, H H Gharakheili, F Loi, A Radford, C Wijenayake, A Vishwanath, V Sivaraman, "Characterizing and classifying IoT traffic in smart cities and campuses," Proc IEEE INFOCOM Workshops, 2017；[21] M Miettinen, S Marchal, I Hafeez, N Asokan, A-R Sadeghi, S Tarkoma, "IoT Sentinel: automated device-type identification for security enforcement in IoT," Proc IEEE ICDCS, 2017；[22] R Sommer, V Paxson, "Outside the closed world: on using machine learning for network intrusion detection," Proc IEEE S&P, 2010；[23] T Chen, S Kornblith, M Norouzi, G Hinton, "A simple framework for contrastive learning of visual representations," Proc ICML, 2020；[24] Y Ganin et al, "Domain-adversarial training of neural networks," JMLR, vol 17, no 59, 2016；[25] R J Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," Machine Learning, vol 8, 1992；[26] I Loshchilov, F Hutter, "Decoupled weight decay regularization," Proc ICLR, 2019；[27] D P Kingma, J Ba, "Adam: a method for stochastic optimization," Proc ICLR, 2015；[28] A Paszke et al, "PyTorch: an imperative style, high-performance deep learning library," Proc NeurIPS, 2019；[29] flash-linear-attention, https://githubcom/fla-org/flash-linear-attention；[30] G Draper-Gil, A H Lashkari, M S I Mamun, A A Ghorbani, "Characterization of encrypted and VPN traffic using time-related features," Proc ICISSP, 2016；[31] A H Lashkari, G Draper-Gil, M S I Mamun, A A Ghorbani, "Characterization of Tor traffic using time-based features," Proc ICISSP, 2017；[32] W Wang, M Zhu, J Wang, X Zeng, Z Yang, "End-to-end encrypted traffic classification with one-dimensional convolution neural networks," Proc IEEE ISI, 2017；[33] G F Lyon，Nmap Network Scanning: The Official Nmap Project Guide to Network Discovery and Security Scanning，Insecure Com LLC，2009。
 
 ## 附录 A 标签集
 
-*表 XII. 作为封闭标签集的 18 个产品与服务，含类型与层级。*
+*表 X. 作为封闭标签集的 18 个产品与服务，含类型与层级。*
 
 | 产品 | 类型 | 层级 |
 |---|---|---|
@@ -332,8 +299,8 @@ Gated DeltaNet 块对序列长度是线性的，单次前向代价为 O(L·d<sub
 | guacamole_mgmt | 堡垒机 | 安全设备 |
 | waf_modsecurity | WAF | 安全设备 |
 | suricata_update | NDR | 安全设备 |
-| web_http | 浏览器 | 生产软件 |
-| ssh | 远程管理 | 生产软件 |
-| ftp | 文件传输 | 生产软件 |
+| web_http | 浏览器 | 常用软件 |
+| ssh | 远程管理 | 常用软件 |
+| ftp | 文件传输 | 常用软件 |
 
 发布内容中没有任何抓包：权重在实验流量和公开基准的训练划分上训练，校验和让任何读者都能核对实际加载的是哪些文件 [29]。
