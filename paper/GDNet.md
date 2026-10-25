@@ -1,10 +1,10 @@
-# GDNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning
+# QuietSpan: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning
 
 Luping QAQ, Independent Researcher
 
 ## Abstract
 
-We present GDNet, a byte-level model that runs beside an intranet traffic probe and names what produced a flow from its first five packets, returning a security appliance, an endpoint security agent, or a piece of common software, or an explicit unknown [1], [7]. Unlike signature-based fingerprinting [17], [19] and learned application classifiers [8], [9], it targets the passive inventory of an internal network: the security appliances, endpoint agents, and common services that a span port already sees. A fixed 1,600-byte vector is formed from the first five packets with the IPv4 addresses masked [1], and four Gated DeltaNet blocks with a shared 256-dimensional CLS readout feed four task heads and a prototype gate [2], [4], [11]. On a 503-flow test split the ensemble reaches 0.8787 product accuracy and 0.9245 tier accuracy, with 0.9784 gate AUROC, and rejects all 18 unknown-product bins at a threshold calibrated on the development half [1], [9], [11]. The release adds a 42 KB C probe, a CLI, an HTTP service, and an enrollment routine that registers a new product from three sub-prototypes without retraining.
+We present QuietSpan, a byte-level model that runs beside an intranet traffic probe. From the first five packets of a flow it returns the product that produced the flow, or an explicit unknown [1], [7]. The label set covers 18 items across three tiers: security appliances, endpoint security agents, and common software. The model masks the IPv4 addresses, packs the packets into a fixed 1,600-byte vector, and encodes it with four Gated DeltaNet blocks whose 256-dimensional CLS state feeds four task heads and a prototype gate [1], [2], [4], [11]. On a 503-flow test split the four-arm ensemble reaches 0.8787 product accuracy and 0.9245 tier accuracy, with 0.9784 gate AUROC, and rejects all 18 unknown-product bins at a threshold calibrated on the development half [1], [9], [11]. The release includes a 42 KB C probe, a CLI, an HTTP service, an enrollment routine that adds a product from three sub-prototypes, and fine-tuning and reinforcement-learning hooks.
 
 **Index Terms**: passive asset discovery, intranet traffic analysis, traffic probe, byte-level classification, tokenizer-free learning, Gated DeltaNet, open-set recognition, encrypted traffic analysis
 
@@ -14,7 +14,7 @@ Endpoint agents are installed by operations, VPN endpoints and the web applicati
 
 Port and protocol rules do not close that gap. The label set used here is closed at 18 products and services, listed in Appendix A with their type and tier, and it contains three VPN products (wireguard, openvpn, and stunnel) that accept operator-configured ports [19], three web-facing products (squid_proxy, ntopng, and guacamole_mgmt) that share 80 and 443 in the default configuration [19], and four endpoint agents (windows_defender, clamav_freshclam, velociraptor, and osquery) whose update traffic follows the same HTTPS pattern [20], [21]. Rule-based fingerprinting resolves the operating system from header quirks [17], the protocol from payload patterns [19], or the TLS stack from a handshake hash [18], whereas learned device identification resolves the device type from flow statistics [20], [21]. Neither produces a product label from a closed set, and neither supplies an abstain option calibrated on held-out sessions [11], [12]. A probe sidesteps the scanning problem entirely, because its span port already carries the traffic of every host that matters and nothing has to be sent for the inventory to grow.
 
-GDNet addresses that setting with a compact byte-level model. The input is the first five packets of a flow, packed into 1,600 bytes with the IPv4 addresses zeroed [1], [7]. The encoder is four Gated DeltaNet blocks of d<sub>model</sub> = 256 and d<sub>state</sub> = 16, giving 2.86M parameters per arm [2], [3], [4]. The classifier is a four-arm ensemble of 11.44M parameters that occupies 46 MB on disk [1], [8], [9]. A separate prototype gate decides whether the product head may be trusted [11], [12], [13], so the system returns a product label, a type, a tier, a prototype distance, and a confidence, or an explicit unknown.
+QuietSpan addresses that setting with a compact byte-level model. The input is the first five packets of a flow, packed into 1,600 bytes with the IPv4 addresses zeroed [1], [7]. The encoder is four Gated DeltaNet blocks of d<sub>model</sub> = 256 and d<sub>state</sub> = 16, giving 2.86M parameters per arm [2], [3], [4]. The classifier is a four-arm ensemble of 11.44M parameters that occupies 46 MB on disk [1], [8], [9]. A separate prototype gate decides whether the product head may be trusted [11], [12], [13], so the system returns a product label, a type, a tier, a prototype distance, and a confidence, or an explicit unknown.
 
 For a flow f, with P the closed set of 18 products listed in Appendix A, T the set of product types, and G the set of tiers, the classifier returns a tuple (┼╖, t╠é, ─¥, d, s) with ┼╖ in P or unknown, t╠é in T, ─¥ in G, a prototype distance d, and a confidence s [11], [13]. Rejection is a threshold of ╧ä = 0.1041, the 68th percentile of development distances, applied to the distance between the flow embedding and the nearest of three class prototypes [12], [13]. It is not an additional output class, so no unknown-class examples are required during training, which matters because the set of products absent from a given network cannot be enumerated in advance [5], [6].
 
@@ -22,7 +22,7 @@ On the 40,283 labelled flows used here the ensemble reaches 0.8787 product accur
 
 This paper makes four contributions.
 
-- We introduce GDNet, a byte-level classifier that assigns flows to 18 security products and an explicit unknown class from the first five packets, using 2.86M parameters per arm and 11.44M for the four-arm ensemble, with no tokenizer and no externally pre-trained corpus [1], [6], [9].
+- We introduce QuietSpan, a byte-level classifier that assigns flows to 18 security products and an explicit unknown class from the first five packets, using 2.86M parameters per arm and 11.44M for the four-arm ensemble, with no tokenizer and no externally pre-trained corpus [1], [6], [9].
 - We describe a rejection mechanism based on three prototypes per class and a threshold calibrated on held-out sessions, which rejects all 18 unknown-product bins in the acceptance set without training on unknown samples [11], [12].
 - We describe the path around the classifier, namely a 42 KB C probe that emits the input vector at the fifth packet, a CLI, an HTTP service, and an enrollment routine that adds a new product from three sub-prototypes without retraining [11], [25].
 - We release an inference stack with checksums that reproduces the reported numbers without redistributing any capture [28], [29].
@@ -35,17 +35,17 @@ p0f infers an operating system from TCP/IP header characteristics such as the in
 
 ### II-B Byte-level traffic classification
 
-ET-BERT tokenizes datagrams before pre-training a Transformer with masked language modeling [7], YaTC renders flows as images and pre-trains a masked autoencoder over patches [8], and NetMamba applies a unidirectional Mamba backbone to packet sequences [9]; all three require a pre-training stage over an external corpus, and all three descend from the byte-level and subword conventions established for text [5], [6]. MambaNetBurst removes both the tokenizer and the pre-training stage and learns directly from raw bytes with a compact Mamba-2 stack of 2.7M parameters [1], which is the closest architectural relative of the present work. GDNet keeps the byte vocabulary, the CLS readout, and the fixed-length burst convention of that design and replaces the mixer with four Gated DeltaNet blocks [4], which retain the linear cost of the state-space formulation [2], [3] while adding a delta-rule update to the transition.
+ET-BERT tokenizes datagrams before pre-training a Transformer with masked language modeling [7], YaTC renders flows as images and pre-trains a masked autoencoder over patches [8], and NetMamba applies a unidirectional Mamba backbone to packet sequences [9]; all three require a pre-training stage over an external corpus, and all three descend from the byte-level and subword conventions established for text [5], [6]. MambaNetBurst removes both the tokenizer and the pre-training stage and learns directly from raw bytes with a compact Mamba-2 stack of 2.7M parameters [1], which is the closest architectural relative of the present work. QuietSpan keeps the byte vocabulary, the CLS readout, and the fixed-length burst convention of that design and replaces the mixer with four Gated DeltaNet blocks [4], which retain the linear cost of the state-space formulation [2], [3] while adding a delta-rule update to the transition.
 
 ### II-C Foundation models and open-set recognition
 
-netFound learns packet representations from a large token corpus and reports frozen-encoder results alongside explicit corrections for dataset shortcuts, at roughly two orders of magnitude more parameters than one 2.86M-parameter GDNet arm [10]. Open-set recognition treats rejection as a decision separate from classification, since softmax confidence is a poor boundary estimator [13] and distance to class prototypes is a calibrated alternative [11], [12]. We keep three sub-prototypes per class inside 54 prototype rows per gate arm, define distance as one minus the maximum cosine similarity, and calibrate ╧ä on the development half only.
+netFound learns packet representations from a large token corpus and reports frozen-encoder results alongside explicit corrections for dataset shortcuts, at roughly two orders of magnitude more parameters than one 2.86M-parameter QuietSpan arm [10]. Open-set recognition treats rejection as a decision separate from classification, since softmax confidence is a poor boundary estimator [13] and distance to class prototypes is a calibrated alternative [11], [12]. We keep three sub-prototypes per class inside 54 prototype rows per gate arm, define distance as one minus the maximum cosine similarity, and calibrate ╧ä on the development half only.
 
 ### II-D Evaluation practice
 
 Evaluation practice in this area has been criticised on two counts that matter here, since packet-level splits can leak sequence numbers into the test set [15] and reported gains sometimes reflect shortcut learning rather than the task [14], which is why a common protocol has been proposed for comparison [16]; this paper therefore fixes one protocol, scores the test half once after every choice has been made on the development half, and releases the evaluation script together with the checkpoints.
 
-*TABLE I. Placement of GDNet among fingerprinting, learned classification, and foundation-model approaches.*
+*TABLE I. Placement of QuietSpan among fingerprinting, learned classification, and foundation-model approaches.*
 
 | Method | Representation | Tokenizer | Pre-training | Sequence model | Target |
 |---|---|---|---|---|---|
@@ -58,7 +58,7 @@ Evaluation practice in this area has been criticised on two counts that matter h
 | NetMamba [9] | packet token | vocab | self-supervised | Mamba | application |
 | MambaNetBurst [1] | raw byte | none | none | Mamba-2 | application |
 | netFound [10] | packet token | vocab | large corpus | Transformer | multiple |
-| GDNet | raw byte | none | contrastive, in-domain | GDN | security product |
+| QuietSpan | raw byte | none | contrastive, in-domain | GDN | security product |
 
 ## III Architecture
 
@@ -266,7 +266,7 @@ The release contains 19 weight files totalling 94.6 MB, no captures, and SHA-256
 
 ## VII Conclusion
 
-GDNet names security products from the first five packets of a flow using 11.44M parameters and no tokenizer, and it declines to answer when a flow does not resemble anything in its training set, attaining on a 503-flow test split 0.8787 product accuracy, 0.9245 tier accuracy, and 0.9784 gate AUROC while rejecting all 18 unknown-product bins in the acceptance set [1], [9]. The parts that matter in deployment are the rejection path and the probe: the first keeps a wrong label from reaching a responder, and the second means the inventory is collected without touching a single host [11], [12], [22].
+QuietSpan names security products from the first five packets of a flow using 11.44M parameters and no tokenizer, and it declines to answer when a flow does not resemble anything in its training set, attaining on a 503-flow test split 0.8787 product accuracy, 0.9245 tier accuracy, and 0.9784 gate AUROC while rejecting all 18 unknown-product bins in the acceptance set [1], [9]. The parts that matter in deployment are the rejection path and the probe: the first keeps a wrong label from reaching a responder, and the second means the inventory is collected without touching a single host [11], [12], [22].
 
 ## Acknowledgments
 

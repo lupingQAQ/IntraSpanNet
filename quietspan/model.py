@@ -1,4 +1,4 @@
-"""GDNet dual-head classifier.
+"""QuietSpan dual-head classifier.
 
 Checkpoint compatibility: the module names and nesting here match the
 released stage3_*.pth files. Keep them unchanged when editing.

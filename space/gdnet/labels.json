@@ -1,0 +1,23 @@
+{
+  "products": [
+    {"id": 0, "name": "windows_defender", "display": "Windows Defender", "tier": "安全软件", "tier_en": "Security software", "type": "杀毒", "type_en": "Antivirus"},
+    {"id": 1, "name": "clamav_freshclam_win", "display": "ClamAV freshclam (Windows)", "tier": "安全软件", "tier_en": "Security software", "type": "杀毒", "type_en": "Antivirus"},
+    {"id": 2, "name": "clamav_freshclam", "display": "ClamAV freshclam", "tier": "安全软件", "tier_en": "Security software", "type": "杀毒", "type_en": "Antivirus"},
+    {"id": 3, "name": "velociraptor", "display": "Velociraptor", "tier": "安全软件", "tier_en": "Security software", "type": "EDR / HIDS", "type_en": "EDR / HIDS"},
+    {"id": 4, "name": "velociraptor_win", "display": "Velociraptor (Windows)", "tier": "安全软件", "tier_en": "Security software", "type": "EDR / HIDS", "type_en": "EDR / HIDS"},
+    {"id": 5, "name": "osquery", "display": "osquery", "tier": "安全软件", "tier_en": "Security software", "type": "EDR / HIDS", "type_en": "EDR / HIDS"},
+    {"id": 6, "name": "wazuh_agent", "display": "Wazuh agent", "tier": "安全软件", "tier_en": "Security software", "type": "EDR / HIDS", "type_en": "EDR / HIDS"},
+    {"id": 7, "name": "wireguard", "display": "WireGuard", "tier": "安全设备", "tier_en": "Security appliance", "type": "零信任 / VPN", "type_en": "Zero trust / VPN"},
+    {"id": 8, "name": "openvpn", "display": "OpenVPN", "tier": "安全设备", "tier_en": "Security appliance", "type": "零信任 / VPN", "type_en": "Zero trust / VPN"},
+    {"id": 9, "name": "stunnel", "display": "stunnel", "tier": "安全设备", "tier_en": "Security appliance", "type": "零信任 / VPN", "type_en": "Zero trust / VPN"},
+    {"id": 10, "name": "squid_proxy", "display": "Squid proxy", "tier": "安全设备", "tier_en": "Security appliance", "type": "AC 上网行为管理", "type_en": "Internet behavior management"},
+    {"id": 11, "name": "ntopng", "display": "ntopng", "tier": "安全设备", "tier_en": "Security appliance", "type": "NDR 流量探测", "type_en": "NDR"},
+    {"id": 12, "name": "guacamole_mgmt", "display": "Apache Guacamole", "tier": "安全设备", "tier_en": "Security appliance", "type": "堡垒机", "type_en": "Bastion host"},
+    {"id": 13, "name": "waf_modsecurity", "display": "ModSecurity WAF", "tier": "安全设备", "tier_en": "Security appliance", "type": "WAF", "type_en": "WAF"},
+    {"id": 14, "name": "suricata_update", "display": "Suricata update", "tier": "安全设备", "tier_en": "Security appliance", "type": "NDR 流量探测", "type_en": "NDR"},
+    {"id": 15, "name": "web_http", "display": "Web browsing", "tier": "正常软件", "tier_en": "Productivity software", "type": "浏览器", "type_en": "Browser"},
+    {"id": 16, "name": "ssh", "display": "SSH", "tier": "正常软件", "tier_en": "Productivity software", "type": "远程管理", "type_en": "Remote administration"},
+    {"id": 17, "name": "ftp", "display": "FTP", "tier": "正常软件", "tier_en": "Productivity software", "type": "文件传输", "type_en": "File transfer"}
+  ],
+  "unknown_id": 18
+}

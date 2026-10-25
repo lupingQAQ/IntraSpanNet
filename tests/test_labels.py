@@ -1,4 +1,4 @@
-from gdnet.labels import PRODUCTS, PRODUCT_TO_TIER, PRODUCT_TO_TYPE, describe
+from quietspan.labels import PRODUCTS, PRODUCT_TO_TIER, PRODUCT_TO_TYPE, describe
 
 
 def test_product_table_is_complete():

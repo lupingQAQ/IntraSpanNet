@@ -1,4 +1,4 @@
-"""Label definitions for GDNet.
+"""Label definitions for QuietSpan.
 
 The class order below is the training order stored in the released
 checkpoints. Do not reorder: the product head and prototype matrix are

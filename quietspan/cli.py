@@ -1,4 +1,4 @@
-"""Command-line interface for GDNet."""
+"""Command-line interface for QuietSpan."""
 
 from __future__ import annotations
 
@@ -110,8 +110,8 @@ def cmd_serve(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="gdnet", description="GDNet traffic classifier")
-    parser.add_argument("--version", action="version", version="gdnet 0.1.0")
+    parser = argparse.ArgumentParser(prog="quietspan", description="QuietSpan traffic classifier")
+    parser.add_argument("--version", action="version", version="quietspan 0.1.0")
     sub = parser.add_subparsers(dest="command", required=True)
 
     classify = sub.add_parser("classify", help="classify pcap files or 1600-byte flow bins")

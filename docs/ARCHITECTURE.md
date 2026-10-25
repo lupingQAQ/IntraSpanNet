@@ -21,12 +21,12 @@ pcap/pcapng
 
 | Path | Purpose |
 |---|---|
-| `gdnet/backbone.py` | ByteEmbed and GDN encoder |
-| `gdnet/model.py` | Dual-head classifier and prototype utilities |
-| `gdnet/preprocess.py` | pcap/pcapng to 1600-byte flow vectors |
-| `gdnet/inference.py` | Weight loading, ensemble, thresholding |
-| `gdnet/cli.py` | `classify` and `serve` commands |
-| `gdnet/labels.py` | Label order, display names, type and tier maps |
+| `quietspan/backbone.py` | ByteEmbed and GDN encoder |
+| `quietspan/model.py` | Dual-head classifier and prototype utilities |
+| `quietspan/preprocess.py` | pcap/pcapng to 1600-byte flow vectors |
+| `quietspan/inference.py` | Weight loading, ensemble, thresholding |
+| `quietspan/cli.py` | `classify` and `serve` commands |
+| `quietspan/labels.py` | Label order, display names, type and tier maps |
 | `scripts/evaluate.py` | Evaluation on a directory of flow bins |
 | `scripts/audit_split_dups.py` | Public split duplicate audit |
 | `scripts/audit_split_labels.py` | Cross-split label conflict audit |

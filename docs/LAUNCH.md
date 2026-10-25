@@ -4,7 +4,7 @@ For the dated schedule, see [LAUNCH_7DAY.md](LAUNCH_7DAY.md).
 
 ## Positioning
 
-One sentence: GDNet identifies 18 security products and services from the first five packets of a flow, rejects unknown products, and ships with an audit of the public benchmark splits used for comparison.
+One sentence: QuietSpan identifies 18 security products and services from the first five packets of a flow, rejects unknown products, and ships with an audit of the public benchmark splits used for comparison.
 
 Do not call it state of the art. Do not call it a replacement for an IDS. The strongest public angle is the split audit and the reproducible, small model. The strongest technical angle is the open-set path and the deployment constraints.
 
@@ -12,17 +12,17 @@ Do not call it state of the art. Do not call it a replacement for an IDS. The st
 
 | Asset | Path | Status |
 |---|---|---|
-| Code repository | `gdnet/` | Ready |
-| Weights | `weights/gdnet/` | Ready, 94.6 MB |
-| Model card | `gdnet/docs/MODEL_CARD.md` | Ready |
-| Results | `gdnet/docs/RESULTS.md` | Ready |
-| Benchmark audit | `gdnet/docs/BENCHMARK_AUDIT.md` | Ready |
-| Release notes | `gdnet/docs/RELEASE_NOTES_v0.1.0.md` | Ready |
-| Blog, English | `gdnet/docs/blog-en.md` | Ready |
-| Blog, Chinese | `gdnet/docs/blog-zh.md` | Ready |
-| Social copy | `gdnet/docs/social-posts.md` | Ready |
-| Space | `gdnet/space/` | Code ready; needs GPU hardware |
-| Demo capture | `gdnet/examples/sample.pcap` | Synthetic, 2.3 KB |
+| Code repository | `quietspan/` | Ready |
+| Weights | `weights/quietspan/` | Ready, 94.6 MB |
+| Model card | `quietspan/docs/MODEL_CARD.md` | Ready |
+| Results | `quietspan/docs/RESULTS.md` | Ready |
+| Benchmark audit | `quietspan/docs/BENCHMARK_AUDIT.md` | Ready |
+| Release notes | `quietspan/docs/RELEASE_NOTES_v0.1.0.md` | Ready |
+| Blog, English | `quietspan/docs/blog-en.md` | Ready |
+| Blog, Chinese | `quietspan/docs/blog-zh.md` | Ready |
+| Social copy | `quietspan/docs/social-posts.md` | Ready |
+| Space | `quietspan/space/` | Code ready; needs GPU hardware |
+| Demo capture | `quietspan/examples/sample.pcap` | Synthetic, 2.3 KB |
 
 ## Before launch
 
@@ -32,20 +32,20 @@ Do not call it state of the art. Do not call it a replacement for an IDS. The st
 python scripts/set_accounts.py --github your-github --hf your-hf
 ```
 
-2. Create the GitHub repository `gdnet`. Do not initialize it with a README.
-3. Create the Hugging Face model repository `gdnet`.
-4. Create the Space `gdnet-demo` and select a GPU hardware tier. The free CPU tier cannot run the model.
+2. Create the GitHub repository `quietspan`. Do not initialize it with a README.
+3. Create the Hugging Face model repository `quietspan`.
+4. Create the Space `quietspan-demo` and select a GPU hardware tier. The free CPU tier cannot run the model.
 5. Verify the weights checksums:
 
 ```bash
-cd weights/gdnet
+cd weights/quietspan
 sha256sum -c SHA256SUMS
 ```
 
 6. Run the local test suite:
 
 ```bash
-cd gdnet
+cd quietspan
 pytest -q
 ```
 
@@ -54,14 +54,14 @@ pytest -q
 ## Publish the code
 
 ```bash
-cd gdnet
+cd quietspan
 git init -b main
 git add -A
 git status --short
-git commit -m "release: GDNet v0.1.0"
-git remote add origin git@github.com:lupingQAQ/gdnet.git
+git commit -m "release: QuietSpan v0.1.0"
+git remote add origin git@github.com:lupingQAQ/quietspan.git
 git push -u origin main
-git tag -a v0.1.0 -m "GDNet v0.1.0"
+git tag -a v0.1.0 -m "QuietSpan v0.1.0"
 git push origin v0.1.0
 ```
 
@@ -71,16 +71,16 @@ Check the staged file list before committing. The repository must not contain we
 
 ```bash
 huggingface-cli login
-huggingface-cli upload luping123/gdnet weights/gdnet . --repo-type model
+huggingface-cli upload luping123/quietspan weights/quietspan . --repo-type model
 ```
 
-Upload the model card as `README.md` in the model repository. The card is `gdnet/docs/MODEL_CARD.md`; rename it on upload or keep both and link them.
+Upload the model card as `README.md` in the model repository. The card is `quietspan/docs/MODEL_CARD.md`; rename it on upload or keep both and link them.
 
 ## Publish the Space
 
 ```bash
-python scripts/build_space.py --weights weights/gdnet
-huggingface-cli upload luping123/gdnet-demo space . --repo-type space
+python scripts/build_space.py --weights weights/quietspan
+huggingface-cli upload luping123/quietspan-demo space . --repo-type space
 ```
 
 The Space needs a GPU. If the account does not have GPU credits, do not publish a CPU Space that always errors. Publish the model card and code first, and add the Space when hardware is available.

@@ -1,12 +1,12 @@
-# GDNet
+# QuietSpan
 
 Byte-level traffic classification for security product discovery.
 
-GDNet identifies security products and services from the first five packets of a network flow. It reports the product, its type and tier, and rejects flows that do not match any known product. The released model is a four-arm ensemble with 2.86M parameters per arm.
+QuietSpan identifies security products and services from the first five packets of a network flow. It reports the product, its type and tier, and rejects flows that do not match any known product. The released model is a four-arm ensemble with 2.86M parameters per arm.
 
-- Model: [gdnet on Hugging Face](https://huggingface.co/luping123/gdnet)
-- Paper: [English PDF](paper/GDNet.pdf) and [Chinese PDF](paper/GDNet-zh.pdf)
-- Project page: https://lupingQAQ.github.io/gdnet/
+- Model: [quietspan on Hugging Face](https://huggingface.co/luping123/quietspan)
+- Paper: [English PDF](paper/QuietSpan.pdf) and [Chinese PDF](paper/QuietSpan-zh.pdf)
+- Project page: https://lupingQAQ.github.io/quietspan/
 - Demo: not deployed. The Space code is in `space/` and requires a CUDA GPU.
 - Report: [docs/RESULTS.md](docs/RESULTS.md)
 - Benchmark audit: [docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
@@ -62,8 +62,8 @@ Requirements:
 CPU inference is not supported in v0.1.0. The GDN backbone uses Triton kernels and requires CUDA.
 
 ```bash
-git clone https://github.com/lupingQAQ/gdnet.git
-cd gdnet
+git clone https://github.com/lupingQAQ/quietspan.git
+cd quietspan
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
@@ -72,15 +72,15 @@ pip install -e .
 Download the weights from Hugging Face:
 
 ```bash
-huggingface-cli download luping123/gdnet --local-dir weights/gdnet
+huggingface-cli download luping123/quietspan --local-dir weights/quietspan
 ```
 
 Classify a capture:
 
 ```bash
-python -m gdnet.cli classify \
+python -m quietspan.cli classify \
   --pcap sample.pcap \
-  --weights-dir weights/gdnet \
+  --weights-dir weights/quietspan \
   --json results.json
 ```
 
@@ -109,7 +109,7 @@ Example record:
 Serve the probe format over HTTP:
 
 ```bash
-python -m gdnet.cli serve --weights-dir weights/gdnet --port 9012
+python -m quietspan.cli serve --weights-dir weights/quietspan --port 9012
 ```
 
 The service accepts `POST /` with one or more 1620-byte `FLW1` records. It returns a JSON array of results.
@@ -187,11 +187,11 @@ Code and weights: Apache-2.0. Documentation: CC-BY-4.0. See [LICENSE](LICENSE) a
 ## Citation
 
 ```bibtex
-@software{gdnet2026,
-  title  = {GDNet: an intranet traffic detection model for security product identification},
+@software{quietspan2026,
+  title  = {QuietSpan: an intranet traffic detection model for security product identification},
   year   = {2026},
-  url    = {https://github.com/lupingQAQ/gdnet},
-  note   = {Model: https://huggingface.co/luping123/gdnet}
+  url    = {https://github.com/lupingQAQ/quietspan},
+  note   = {Model: https://huggingface.co/luping123/quietspan}
 }
 ```
 

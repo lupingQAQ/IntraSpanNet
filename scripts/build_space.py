@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Assemble a Hugging Face Space directory.
 
-Copies the gdnet package, the sample capture, and the weights index into
+Copies the quietspan package, the sample capture, and the weights index into
 space/. Run this before uploading space/ to Hugging Face.
 
 Example:
-  python scripts/build_space.py --weights weights/gdnet
+  python scripts/build_space.py --weights weights/quietspan
 """
 
 from __future__ import annotations
@@ -18,11 +18,11 @@ import shutil
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--space", default="space")
-    ap.add_argument("--weights", default="weights/gdnet")
+    ap.add_argument("--weights", default="weights/quietspan")
     args = ap.parse_args()
 
-    src_pkg = os.path.join("gdnet")
-    dst_pkg = os.path.join(args.space, "gdnet")
+    src_pkg = os.path.join("quietspan")
+    dst_pkg = os.path.join(args.space, "quietspan")
     if os.path.exists(dst_pkg):
         shutil.rmtree(dst_pkg)
     shutil.copytree(
@@ -35,7 +35,7 @@ def main() -> int:
     if os.path.exists(sample):
         shutil.copy2(sample, os.path.join(args.space, "sample.pcap"))
 
-    dst_weights = os.path.join(args.space, "gdnet")
+    dst_weights = os.path.join(args.space, "quietspan")
     if os.path.isdir(args.weights):
         os.makedirs(dst_weights, exist_ok=True)
         for name in ("config.json", "labels.json", "SHA256SUMS"):

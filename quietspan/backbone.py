@@ -1,4 +1,4 @@
-"""Byte-level GDN backbone used by GDNet.
+"""Byte-level GDN backbone used by QuietSpan.
 
 The architecture follows the byte-level Mamba/GDN encoder used by
 MambaNetBurst (https://github.com/gayanku/MambaNetBurst). The code here is a
@@ -52,7 +52,7 @@ class GDNBlock(nn.Module):
         super().__init__()
         if GatedDeltaNet is None:
             raise ImportError(
-                "GDNet requires flash-linear-attention. "
+                "QuietSpan requires flash-linear-attention. "
                 "Install it with: pip install flash-linear-attention"
             )
         key_dim_target = 0.75 * d_model

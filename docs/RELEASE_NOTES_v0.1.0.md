@@ -1,10 +1,10 @@
-# GDNet v0.1.0
+# QuietSpan v0.1.0
 
 Release date: 2026-10-24
 
 ## Summary
 
-GDNet is a byte-level traffic classifier for security product discovery. It identifies 18 security products and services from the first five packets of a flow and rejects unknown products with a prototype-distance threshold. The release contains a four-arm ensemble, a portable inference package, a CLI, an HTTP service, evaluation scripts, and a public-split audit.
+QuietSpan is a byte-level traffic classifier for security product discovery. It identifies 18 security products and services from the first five packets of a flow and rejects unknown products with a prototype-distance threshold. The release contains a four-arm ensemble, a portable inference package, a CLI, an HTTP service, evaluation scripts, and a public-split audit.
 
 ## Results
 
@@ -21,7 +21,7 @@ GDNet is a byte-level traffic classifier for security product discovery. It iden
 
 ## Contents
 
-- `gdnet/`: model, preprocessing, inference, CLI.
+- `quietspan/`: model, preprocessing, inference, CLI.
 - `scripts/`: evaluation and split-audit tools.
 - `docs/`: results, model card, architecture, benchmark audit.
 - `space/`: Gradio demo.
@@ -40,14 +40,14 @@ GDNet is a byte-level traffic classifier for security product discovery. It iden
 
 ```bash
 pip install -e .
-huggingface-cli download luping123/gdnet --local-dir weights/gdnet
-python -m gdnet.cli classify --pcap sample.pcap --weights-dir weights/gdnet
+huggingface-cli download luping123/quietspan --local-dir weights/quietspan
+python -m quietspan.cli classify --pcap sample.pcap --weights-dir weights/quietspan
 ```
 
 ## Links
 
-- Code: https://github.com/lupingQAQ/gdnet
-- Model: https://huggingface.co/luping123/gdnet
+- Code: https://github.com/lupingQAQ/quietspan
+- Model: https://huggingface.co/luping123/quietspan
 - Space code: `space/` (requires a CUDA GPU; not deployed)
 
 ## License

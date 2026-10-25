@@ -1,7 +1,7 @@
-# GDNet technical report
+# QuietSpan technical report
 
-- `GDNet.md` / `GDNet.pdf`: English version, IEEE two-column, 5 pages.
-- `GDNet-zh.md` / `GDNet-zh.pdf`: Chinese version, same structure and numbers, 6 pages.
+- `QuietSpan.md` / `QuietSpan.pdf`: English version, IEEE two-column, 5 pages.
+- `QuietSpan-zh.md` / `QuietSpan-zh.pdf`: Chinese version, same structure and numbers, 6 pages.
 - `style.css`: print stylesheet for the English build.
 - `style-zh.css`: print stylesheet for the Chinese build (CJK fonts, wider leading).
 - `assets/`: architecture and benchmark figures.

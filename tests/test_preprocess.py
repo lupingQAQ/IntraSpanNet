@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from gdnet.preprocess import FLOW_LEN, flows_from_pcap
+from quietspan.preprocess import FLOW_LEN, flows_from_pcap
 
 dpkt = pytest.importorskip("dpkt")
 

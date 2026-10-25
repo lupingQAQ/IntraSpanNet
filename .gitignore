@@ -30,8 +30,8 @@ logs/
 runs/
 
 # Generated Space payloads
-space/gdnet/
-space/gdnet/
-paper/GDNet.base.md
+space/quietspan/
+space/quietspan/
+paper/QuietSpan.base.md
 paper/paper-zh.html
 

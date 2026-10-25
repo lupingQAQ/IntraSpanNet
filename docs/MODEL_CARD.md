@@ -18,11 +18,11 @@ metrics:
   - auroc
 ---
 
-# GDNet
+# QuietSpan
 
-GDNet identifies security products and services from the first five packets of a network flow. It reports a product label, a type, a tier, and an open-set distance. Flows that do not match a known product are rejected as unknown.
+QuietSpan identifies security products and services from the first five packets of a network flow. It reports a product label, a type, a tier, and an open-set distance. Flows that do not match a known product are rejected as unknown.
 
-This repository contains the weights and configuration. Code is at [github.com/lupingQAQ/gdnet](https://github.com/lupingQAQ/gdnet). The technical report is at [paper/gdnet.pdf](https://github.com/lupingQAQ/gdnet/blob/main/paper/gdnet.pdf).
+This repository contains the weights and configuration. Code is at [github.com/lupingQAQ/quietspan](https://github.com/lupingQAQ/quietspan). The technical report is at [paper/quietspan.pdf](https://github.com/lupingQAQ/quietspan/blob/main/paper/quietspan.pdf).
 
 ## Model details
 
@@ -77,7 +77,7 @@ Additional results:
 - Acceptance: 8/10 products without timing rescue; 9/10 with the internal timing rule, which is not included in v0.1.0.
 - Throughput: 253 flows/s for the ensemble, 1,017 flows/s for one arm, on an RTX 4090.
 
-The test split is a flow-level half of the validation set, not a session-level holdout. Each class has one held-out session. See [docs/RESULTS.md](https://github.com/lupingQAQ/gdnet/blob/main/docs/RESULTS.md) for the full protocol.
+The test split is a flow-level half of the validation set, not a session-level holdout. Each class has one held-out session. See [docs/RESULTS.md](https://github.com/lupingQAQ/quietspan/blob/main/docs/RESULTS.md) for the full protocol.
 
 ## Limitations
 
@@ -107,10 +107,10 @@ The model outputs a probability and a distance, not a fact. Treat low-confidence
 ## Citation
 
 ```bibtex
-@software{gdnet2026,
-  title  = {GDNet: an intranet traffic detection model for security product identification},
+@software{quietspan2026,
+  title  = {QuietSpan: an intranet traffic detection model for security product identification},
   year   = {2026},
-  url    = {https://github.com/lupingQAQ/gdnet},
-  note   = {Model: https://huggingface.co/luping123/gdnet}
+  url    = {https://github.com/lupingQAQ/quietspan},
+  note   = {Model: https://huggingface.co/luping123/quietspan}
 }
 ```

@@ -2,7 +2,7 @@
 
 ## Intended use
 
-GDNet is a network traffic classifier for authorized asset discovery and security review. Use it only on networks you own or have written permission to monitor. The model reports probabilities and distances, not facts. High-impact decisions require human review.
+QuietSpan is a network traffic classifier for authorized asset discovery and security review. Use it only on networks you own or have written permission to monitor. The model reports probabilities and distances, not facts. High-impact decisions require human review.
 
 ## Prohibited use
 
