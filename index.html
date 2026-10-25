@@ -64,6 +64,7 @@
     <a class="btn" href="https://github.com/lupingQAQ/IntraSpanNet">Code</a>
     <a class="btn" href="https://huggingface.co/luping123/IntraSpanNet">Weights</a>
     <a class="btn" href="https://github.com/lupingQAQ/IntraSpanNet/releases/tag/v0.1.0">Release v0.1.0</a>
+    <a class="btn" href="https://github.com/lupingQAQ/IntraSpanNet/blob/main/README.zh-CN.md">中文说明</a>
   </div>
 
   <h2>What it does</h2>
@@ -90,15 +91,25 @@ python -m intraspannet.cli classify --pcap capture.pcapng --weights weights
 python -m intraspannet.cli serve --weights weights --port 8080</code></pre>
   <p>Inference needs a CUDA device. The Gated DeltaNet backbone uses Triton kernels, so there is no CPU path, and that is a deliberate decision rather than an omission.</p>
 
+  <h2>Keep training it</h2>
+  <p>The supervised and reinforcement-learning objectives ship with the package, so the 18 labels are a starting point. A new capture with a new product goes in through a JSONL manifest and the same two stages that produced the released arms.</p>
+<pre><code>python examples/train_sft.py --weights-dir weights \
+    --manifest manifest.jsonl --epochs 5 --out runs/sft/arm.pth
+
+python examples/train_rl.py --manifest manifest.jsonl \
+    --init runs/sft/arm.pth --lr 1e-5 --out runs/rl/arm.pth</code></pre>
+  <p><code>SFTConfig</code> carries the weights of the product, type, tier, malicious and contrastive terms, <code>RLConfig</code> the three rewards, and <code>load_backbone</code> warm-starts a model whose product head has a different number of classes. Prototypes and the open-set threshold are rebuilt from your own data: the shipped 0.1041 belongs to the shipped label set.</p>
+  <p>Guide: <a href="https://github.com/lupingQAQ/IntraSpanNet/blob/main/docs/TRAINING.md">docs/TRAINING.md</a> in English, <a href="https://github.com/lupingQAQ/IntraSpanNet/blob/main/docs/TRAINING.zh-CN.md">docs/TRAINING.zh-CN.md</a> in Chinese.</p>
+
   <h2>Limits, stated up front</h2>
-  <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. Training code is not released; checkpoints, prototypes, threshold and the evaluation script are.</p>
+  <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. Stage 1, the contrastive pretraining, depends on a capture layout that cannot be redistributed and is not released; stages 2 and 3 are, with the checkpoints, prototypes, threshold and the evaluation script.</p>
 
   <h2>Cite</h2>
   <p>DOI: <a href="https://zenodo.org/records/23643146">10.5281/zenodo.23643146</a></p>
-<pre><code>@misc{intraspannet2026,
+<pre><code>@misc{li2026intraspannet,
   doi    = {10.5281/zenodo.23643146},
   title  = {IntraSpanNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning},
-  author = {Luping QAQ},
+  author = {Li, Chenhe},
   year   = {2026},
   note   = {https://github.com/lupingQAQ/IntraSpanNet},
   url    = {https://github.com/lupingQAQ/IntraSpanNet}
