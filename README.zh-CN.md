@@ -1,11 +1,11 @@
-# QuietSpan
+# IntraSpanNet
 
 面向安全产品发现的字节级流量分类模型。
 
-QuietSpan 从一条流的前 5 个包识别安全产品与服务，输出产品、类型、大类，并对不在已知类别中的流量给出未知告警。发布版本为四臂集成，单臂 2.86M 参数。
+IntraSpanNet 从一条流的前 5 个包识别安全产品与服务，输出产品、类型、大类，并对不在已知类别中的流量给出未知告警。发布版本为四臂集成，单臂 2.86M 参数。
 
-- 模型：[Hugging Face 上的 quietspan](https://huggingface.co/luping123/quietspan)
-- 论文：[PDF](paper/quietspan.pdf)
+- 模型：[Hugging Face 上的 intraspannet](https://huggingface.co/luping123/IntraSpanNet)
+- 论文：[PDF](paper/intraspannet.pdf)
 - 演示：暂未部署。Space 代码在 `space/`，需要 CUDA GPU。
 - 技术报告：[docs/RESULTS.md](docs/RESULTS.md)
 - 基准审计：[docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
@@ -61,8 +61,8 @@ test 集为验证集的流级半折，不是会话级留出。每个产品类只
 v0.1.0 不支持 CPU 推理。GDN 骨干使用 Triton 内核，必须使用 CUDA。
 
 ```bash
-git clone https://github.com/lupingQAQ/quietspan.git
-cd quietspan
+git clone https://github.com/lupingQAQ/IntraSpanNet.git
+cd IntraSpanNet
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
@@ -71,15 +71,15 @@ pip install -e .
 下载权重：
 
 ```bash
-huggingface-cli download luping123/quietspan --local-dir weights/quietspan
+huggingface-cli download luping123/IntraSpanNet --local-dir weights/intraspannet
 ```
 
 分类一个抓包文件：
 
 ```bash
-python -m quietspan.cli classify \
+python -m intraspannet.cli classify \
   --pcap sample.pcap \
-  --weights-dir weights/quietspan \
+  --weights-dir weights/intraspannet \
   --json results.json
 ```
 
@@ -88,7 +88,7 @@ python -m quietspan.cli classify \
 服务模式：
 
 ```bash
-python -m quietspan.cli serve --weights-dir weights/quietspan --port 9012
+python -m intraspannet.cli serve --weights-dir weights/intraspannet --port 9012
 ```
 
 服务接收 `POST /`，请求体为一个或多个 1620 字节的 `FLW1` 记录，返回 JSON 数组。
@@ -164,11 +164,11 @@ bytes (1600)
 ## 引用
 
 ```bibtex
-@software{quietspan2026,
-  title  = {QuietSpan: Byte-level traffic classification for security product discovery},
+@software{intraspannet2026,
+  title  = {IntraSpanNet: Byte-level traffic classification for security product discovery},
   year   = {2026},
-  url    = {https://github.com/lupingQAQ/quietspan},
-  note   = {Model: https://huggingface.co/luping123/quietspan}
+  url    = {https://github.com/lupingQAQ/IntraSpanNet},
+  note   = {Model: https://huggingface.co/luping123/IntraSpanNet}
 }
 ```
 

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Download the released QuietSpan weights from Hugging Face."""
+"""Download the released IntraSpanNet weights from Hugging Face."""
 
 from __future__ import annotations
 
 import argparse
 import os
 
-DEFAULT_REPO = "your-org/quietspan"
+DEFAULT_REPO = "your-org/intraspannet"
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", default=DEFAULT_REPO)
-    ap.add_argument("--out", default="weights/quietspan")
+    ap.add_argument("--out", default="weights/intraspannet")
     args = ap.parse_args()
 
     try:

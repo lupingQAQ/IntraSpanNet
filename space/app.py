@@ -8,11 +8,11 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from quietspan.inference import Ensemble
-from quietspan.preprocess import flow_vectors_from_pcap
+from intraspannet.inference import Ensemble
+from intraspannet.preprocess import flow_vectors_from_pcap
 
-WEIGHTS_DIR = os.environ.get("GDNET_WEIGHTS", os.path.join(os.path.dirname(__file__), "quietspan"))
-MODEL_REPO = os.environ.get("GDNET_MODEL", "your-org/quietspan")
+WEIGHTS_DIR = os.environ.get("GDNET_WEIGHTS", os.path.join(os.path.dirname(__file__), "intraspannet"))
+MODEL_REPO = os.environ.get("GDNET_MODEL", "your-org/intraspannet")
 _ENGINE = None
 
 
@@ -69,9 +69,9 @@ def classify(file_path):
     return table, json.dumps(summary, ensure_ascii=False, indent=2), json.dumps(rows[:50], ensure_ascii=False, indent=2)
 
 
-with gr.Blocks(title="QuietSpan") as demo:
+with gr.Blocks(title="IntraSpanNet") as demo:
     gr.Markdown(
-        "# QuietSpan\n"
+        "# IntraSpanNet\n"
         "Byte-level traffic classification for security product discovery. "
         "The model identifies 18 security products and services, and rejects unknown products.\n\n"
         "The demo processes the first five packets of each unidirectional flow. "

@@ -3,13 +3,13 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quietspan"
+name = "intraspannet"
 version = "0.1.0"
 description = "Byte-level traffic classification for security product discovery"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "QuietSpan contributors" }]
+authors = [{ name = "IntraSpanNet contributors" }]
 keywords = ["network-security", "traffic-classification", "open-set-recognition", "mamba", "gdn"]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -29,10 +29,10 @@ space = ["gradio>=5.0"]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
-quietspan = "quietspan.cli:main"
+intraspannet = "intraspannet.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["quietspan*"]
+include = ["intraspannet*"]
 
 [tool.ruff]
 line-length = 110

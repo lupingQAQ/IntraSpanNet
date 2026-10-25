@@ -18,7 +18,7 @@
 
 问题只是：单看报文，能不能说清这条流是哪个设备、哪个软件发出的？
 
-我们做了个模型叫 QuietSpan，就是补这一层。
+我们做了个模型叫 IntraSpanNet，就是补这一层。
 
 它取一条流的前五个报文，把 IPv4 地址抹掉，剩下的 1600 字节直接喂给模型，输出一个标签。整个过程不发包、不接触主机、不用凭据，目标日志里也不留痕迹。
 
@@ -108,10 +108,10 @@
 
 代码和权重 Apache-2.0，版本 0.1.0，带 SHA256 校验和，仓库里没有任何抓包。
 
-- 项目主页：https://lupingQAQ.github.io/quietspan/
-- 代码：https://github.com/lupingQAQ/quietspan
-- 权重：https://huggingface.co/luping123/quietspan
-- 论文（英文，5 页）：https://github.com/lupingQAQ/quietspan/blob/main/paper/QuietSpan.pdf
-- 论文（中文，6 页）：https://github.com/lupingQAQ/quietspan/blob/main/paper/QuietSpan-zh.pdf
+- 项目主页：https://lupingQAQ.github.io/IntraSpanNet/
+- 代码：https://github.com/lupingQAQ/IntraSpanNet
+- 权重：https://huggingface.co/luping123/IntraSpanNet
+- 论文（英文，5 页）：https://github.com/lupingQAQ/IntraSpanNet/blob/main/paper/IntraSpanNet.pdf
+- 论文（中文，6 页）：https://github.com/lupingQAQ/IntraSpanNet/blob/main/paper/IntraSpanNet-zh.pdf
 
 如果你手上正好有一批内网流量、又不想为盘点去扫一遍，可以直接拿去试。特别是那些扫一次就出问题的设备——它们最适合这种办法。

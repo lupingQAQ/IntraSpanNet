@@ -1,4 +1,4 @@
-# QuietSpan results
+# IntraSpanNet results
 
 This document summarizes the evaluation protocol and the released numbers. It is self-contained; the internal experiment log is not part of the release.
 

@@ -52,7 +52,7 @@ def _batch(n=4):
 
 
 def test_sft_loss_terms_and_backprop():
-    from quietspan.train import SFTConfig, compute_sft_loss
+    from intraspannet.train import SFTConfig, compute_sft_loss
 
     model = StubClassifier()
     cfg = SFTConfig(lda=0.5, hardneg=1.0, w_domain=0.1)
@@ -67,7 +67,7 @@ def test_sft_loss_terms_and_backprop():
 
 
 def test_sft_loss_without_optional_inputs():
-    from quietspan.train import SFTConfig, compute_sft_loss
+    from intraspannet.train import SFTConfig, compute_sft_loss
 
     model = StubClassifier()
     terms = compute_sft_loss(model, _batch(), SFTConfig())
@@ -76,7 +76,7 @@ def test_sft_loss_without_optional_inputs():
 
 
 def test_rl_loss_reward_range_and_grad():
-    from quietspan.train import RLConfig, compute_rl_loss
+    from intraspannet.train import RLConfig, compute_rl_loss
 
     model = StubClassifier()
     terms = compute_rl_loss(model, _batch(), RLConfig())
@@ -87,7 +87,7 @@ def test_rl_loss_reward_range_and_grad():
 
 
 def test_trainer_updates_weights():
-    from quietspan.train import SFTConfig, Trainer
+    from intraspannet.train import SFTConfig, Trainer
 
     model = StubClassifier()
     trainer = Trainer(model, torch.optim.SGD(model.parameters(), lr=1e-2))

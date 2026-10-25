@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate a QuietSpan ensemble on a labeled flow set.
+"""Evaluate a IntraSpanNet ensemble on a labeled flow set.
 
 Accepted inputs:
   - an .npz file with X (N, 1600) uint8 and y_prod (N,) int,
@@ -7,7 +7,7 @@ Accepted inputs:
   - a directory of flow_*.bin files plus --labels CSV with columns source,label
 
 Example:
-  python scripts/evaluate.py --weights-dir weights/quietspan --npz test.npz
+  python scripts/evaluate.py --weights-dir weights/intraspannet --npz test.npz
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ from collections import Counter
 
 import numpy as np
 
-from quietspan.inference import Ensemble
-from quietspan.labels import PRODUCT_TO_TIER, PRODUCTS
-from quietspan.preprocess import iter_flow_bins
+from intraspannet.inference import Ensemble
+from intraspannet.labels import PRODUCT_TO_TIER, PRODUCTS
+from intraspannet.preprocess import iter_flow_bins
 
 
 def macro_f1(y_true: np.ndarray, y_pred: np.ndarray) -> float:

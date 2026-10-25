@@ -1,14 +1,14 @@
 cff-version: 1.2.0
 message: "If you use this model, cite the software entry below."
-title: "QuietSpan: an intranet traffic detection model for security product identification"
+title: "IntraSpanNet: an intranet traffic detection model for security product identification"
 version: 0.1.0
 date-released: 2026-10-24
 license: Apache-2.0
 type: software
 authors:
-  - name: "QuietSpan contributors"
-repository-code: "https://github.com/lupingQAQ/quietspan"
-url: "https://huggingface.co/luping123/quietspan"
+  - name: "IntraSpanNet contributors"
+repository-code: "https://github.com/lupingQAQ/IntraSpanNet"
+url: "https://huggingface.co/luping123/IntraSpanNet"
 keywords:
   - network security
   - traffic classification

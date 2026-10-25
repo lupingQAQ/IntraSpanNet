@@ -30,8 +30,8 @@ logs/
 runs/
 
 # Generated Space payloads
-space/quietspan/
-space/quietspan/
-paper/QuietSpan.base.md
+space/intraspannet/
+space/intraspannet/
+paper/IntraSpanNet.base.md
 paper/paper-zh.html
 

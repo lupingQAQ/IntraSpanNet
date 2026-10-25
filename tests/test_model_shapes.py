@@ -5,7 +5,7 @@ pytest.importorskip("fla")
 
 
 def test_model_output_shapes():
-    from quietspan.model import DualHeadClassifier
+    from intraspannet.model import DualHeadClassifier
 
     model = DualHeadClassifier(num_software=18, num_types=10, num_tiers=3, num_malicious=11)
     x = torch.zeros(2, 1600, dtype=torch.long)

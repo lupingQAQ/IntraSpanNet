@@ -4,10 +4,10 @@ Status at the start: GitHub repository, release v0.1.0, Hugging Face model, and 
 
 ## Day 0 (done)
 
-- GitHub repository: https://github.com/lupingQAQ/quietspan
+- GitHub repository: https://github.com/lupingQAQ/IntraSpanNet
 - Release v0.1.0 with source and weight assets.
-- Hugging Face model: https://huggingface.co/luping123/quietspan
-- Technical report: `paper/quietspan.pdf` in the repository.
+- Hugging Face model: https://huggingface.co/luping123/IntraSpanNet
+- Technical report: `paper/intraspannet.pdf` in the repository.
 - Model card, results, benchmark audit, and launch copy are in the repository.
 
 ## Day 1: DOI and preprint

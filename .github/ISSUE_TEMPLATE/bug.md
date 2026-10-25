@@ -23,7 +23,7 @@ commands or minimal example
 - PyTorch:
 - CUDA / driver:
 - GPU:
-- QuietSpan version or commit:
+- IntraSpanNet version or commit:
 
 ## Checks
 

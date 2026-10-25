@@ -6,17 +6,17 @@ The channels below need no academic account, no institution, and no invitation. 
 
 | Channel | URL | What it carries |
 |---|---|---|
-| GitHub Pages | https://lupingQAQ.github.io/quietspan/ | landing page, abstract, audit table, install commands, citation |
-| GitHub repository | https://github.com/lupingQAQ/quietspan | code, docs, both papers, release tag v0.1.0 |
-| GitHub Release | https://github.com/lupingQAQ/quietspan/releases/tag/v0.1.0 | source zip, weights zip, checksums |
-| Hugging Face model | https://huggingface.co/luping123/quietspan | weights, model card, config with arm mapping |
-| Hugging Face discussion | https://huggingface.co/luping123/quietspan/discussions/1 | release announcement |
+| GitHub Pages | https://lupingQAQ.github.io/IntraSpanNet/ | landing page, abstract, audit table, install commands, citation |
+| GitHub repository | https://github.com/lupingQAQ/IntraSpanNet | code, docs, both papers, release tag v0.1.0 |
+| GitHub Release | https://github.com/lupingQAQ/IntraSpanNet/releases/tag/v0.1.0 | source zip, weights zip, checksums |
+| Hugging Face model | https://huggingface.co/luping123/IntraSpanNet | weights, model card, config with arm mapping |
+| Hugging Face discussion | https://huggingface.co/luping123/IntraSpanNet/discussions/1 | release announcement |
 
 ## Ready, needs one account action
 
 | Channel | What it needs | Why it is worth doing |
 |---|---|---|
-| PyPI | an API token (`twine upload`) | `pip install quietspan` is the shortest path from "interesting" to "running it" |
+| PyPI | an API token (`twine upload`) | `pip install intraspannet` is the shortest path from "interesting" to "running it" |
 | Kaggle | a Kaggle account | datasets and notebooks are indexed by search and cited by practitioners |
 | ModelScope | an account, Chinese phone number accepted | the Chinese mirror of the model card; large domestic ML audience |
 | Papers with Code | GitHub login only | links the report to code and weights; this is where people look for implementations |

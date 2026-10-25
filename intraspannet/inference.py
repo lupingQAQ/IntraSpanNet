@@ -1,4 +1,4 @@
-"""Portable inference for the QuietSpan ensemble."""
+"""Portable inference for the IntraSpanNet ensemble."""
 
 from __future__ import annotations
 
@@ -94,7 +94,7 @@ class Ensemble:
         self.device = torch.device(device)
         if self.device.type == "cpu" and not allow_cpu:
             raise RuntimeError(
-                "QuietSpan uses Triton GDN kernels and requires a CUDA GPU. "
+                "IntraSpanNet uses Triton GDN kernels and requires a CUDA GPU. "
                 "CPU inference is not supported in v0.1.0. "
                 "Pass allow_cpu=True only if your flash-linear-attention build has a CPU path."
             )

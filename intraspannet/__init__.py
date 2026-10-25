@@ -1,4 +1,4 @@
-"""QuietSpan: byte-level traffic classification for security product discovery."""
+"""IntraSpanNet: byte-level traffic classification for security product discovery."""
 
 from .inference import Ensemble
 from .labels import PRODUCTS, describe
