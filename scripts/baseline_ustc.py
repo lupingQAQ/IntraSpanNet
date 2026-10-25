@@ -97,12 +97,28 @@ def histogram(vecs: list[np.ndarray]) -> np.ndarray:
     return out
 
 
+def ngram_hashed(vecs: list[np.ndarray], dim: int = 4096) -> np.ndarray:
+    """Hashed byte 3-gram counts, L2 normalised. A different inductive bias
+    from the histogram: it keeps local byte order."""
+    out = np.zeros((len(vecs), dim), dtype=np.float32)
+    for i, v in enumerate(vecs):
+        a = v[:-2].astype(np.int32)
+        b = v[1:-1].astype(np.int32)
+        c = v[2:].astype(np.int32)
+        h = (a * 131 + b * 17 + c) % dim
+        np.add.at(out[i], h, 1.0)
+        out[i] /= max(np.linalg.norm(out[i]), 1e-6)
+    return out
+
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default=r"D:\traffic-ids\data\ustc")
     ap.add_argument("--out", default="baseline_ustc.json")
     ap.add_argument("--per-class", type=int, default=200, help="max flows per class")
     ap.add_argument("--per-capture", type=int, default=120, help="max flows per pcap")
+    ap.add_argument("--features", choices=["histogram", "ngram"], default="histogram")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
 
@@ -150,7 +166,7 @@ def main() -> None:
         print("not enough flows:", len(X))
         return
 
-    F = histogram(list(X))
+    F = (ngram_hashed(list(X)) if args.features == "ngram" else histogram(list(X)))
     tr = np.where(is_train)[0]
     te = np.where(~is_train)[0]
     n = len(F)

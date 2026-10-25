@@ -1,0 +1,15 @@
+{
+  "dataset": "USTC-TFC2016",
+  "task": "benign vs malware",
+  "features": "256-bin byte histogram, standardised",
+  "model": "logistic regression (numpy, 400 epochs)",
+  "flows_total": 1105,
+  "train": 738,
+  "test": 367,
+  "accuracy": 0.9619,
+  "macro_f1": 0.7401,
+  "class_counts": {
+    "0": 960,
+    "1": 145
+  }
+}
