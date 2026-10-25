@@ -83,13 +83,12 @@
   <p>When a flow does not resemble any of them, the gate rejects it instead of guessing. All 18 unknown-product bins in the acceptance set are rejected at a fixed threshold of 0.1041, stable from q = 0.64 to q = 0.75. A new product can be added by registering three sub-prototypes, without retraining.</p>
 
   <h2>Install and run</h2>
-<pre><code>git clone https://github.com/lupingQAQ/IntraSpanNet
-cd IntraSpanNet
-pip install -r requirements.txt
+<pre><code>pip install intraspannet
+huggingface-cli download luping123/IntraSpanNet --local-dir weights
 
 python -m intraspannet.cli classify --pcap capture.pcapng --weights weights
 python -m intraspannet.cli serve --weights weights --port 8080</code></pre>
-  <p>Inference needs a CUDA device. The Gated DeltaNet backbone uses Triton kernels, so there is no CPU path, and that is a deliberate decision rather than an omission.</p>
+  <p>It runs on a laptop: the Gated DeltaNet block has a plain PyTorch port that loads the released weights unchanged, at about two seconds per flow per arm. A CUDA device with flash-linear-attention (<code>pip install "intraspannet[gpu]"</code>) is roughly a thousand times faster and is what a probe would use. <code>scripts/verify_cpu_backend.py</code> measures the port against captures you have labels for.</p>
 
   <h2>Keep training it</h2>
   <p>The supervised and reinforcement-learning objectives ship with the package, so the 18 labels are a starting point. A new capture with a new product goes in through a JSONL manifest and the same two stages that produced the released arms.</p>
