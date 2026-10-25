@@ -188,7 +188,7 @@ Code and weights: Apache-2.0. Documentation: CC-BY-4.0. See [LICENSE](LICENSE) a
 
 ```bibtex
 @software{gdnet2026,
-  title  = {GDNet: Byte-level traffic classification for security product discovery},
+  title  = {GDNet: an intranet traffic detection model for security product identification},
   year   = {2026},
   url    = {https://github.com/lupingQAQ/gdnet},
   note   = {Model: https://huggingface.co/luping123/gdnet}

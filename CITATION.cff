@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this model, cite the software entry below."
-title: "GDNet: Byte-level traffic classification for security product discovery"
+title: "GDNet: an intranet traffic detection model for security product identification"
 version: 0.1.0
 date-released: 2026-10-24
 license: Apache-2.0
