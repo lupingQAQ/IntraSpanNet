@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GDNet - intranet traffic detection for security product identification</title>
-<meta name="description" content="GDNet is an intranet traffic detection model that identifies 18 security products and services from the first five packets of a network flow, rejects unknown products with a calibrated prototype distance, and reports an exact byte-level audit of six public traffic benchmarks.">
+<meta name="description" content="GDNet is an intranet traffic detection model that runs beside a packet probe and identifies 18 security appliances, endpoint agents, and common software products from the first five packets of a flow, without active scanning.">
 <meta property="og:title" content="GDNet - intranet traffic detection for security product identification">
 <meta property="og:description" content="Intranet traffic detection model, 2.86M parameters per arm, 0.8787 product accuracy on a 503-flow test split, explicit unknown class. Open weights, Apache-2.0.">
 <meta property="og:type" content="article">
@@ -56,8 +56,8 @@
 <body>
 <div class="wrap">
 
-  <h1>GDNet: an intranet traffic detection model for security product identification</h1>
-  <p class="sub">From the first five packets of a flow. 2.86M parameters per arm, explicit unknown class, open weights.</p>
+  <h1>GDNet: passive intranet asset discovery from five packets, without scanning</h1>
+  <p class="sub">A traffic probe already sees every host. GDNet names what produced each flow: a security appliance, an endpoint agent, or a common software. 2.86M parameters per arm, explicit unknown class, open weights.</p>
 
   <div class="links">
     <a class="btn primary" href="https://github.com/lupingQAQ/gdnet/blob/main/paper/GDNet.pdf">Read the paper (PDF)</a>
@@ -77,21 +77,9 @@
     <div class="stat"><b>18/18</b><span>unknown-product bins rejected</span></div>
   </div>
 
-  <h2>The part that matters more</h2>
-  <p>While building it, every flow in six public traffic benchmarks was hashed twice, over the PNG bytes and over the decoded pixels. Five of the six share roughly 80% of their test flows with their training splits, byte for byte. ISCXTor2016 shares none.</p>
-
-  <table>
-    <thead><tr><th>Benchmark</th><th class="num">Test</th><th class="num">In train</th><th class="num">Share</th><th class="num">Clean</th></tr></thead>
-    <tbody>
-      <tr><td>ISCXVPN2016</td><td class="num">1,384</td><td class="num">1,106</td><td class="num">79.9%</td><td class="num">278</td></tr>
-      <tr><td>ISCXTor2016</td><td class="num">1,458</td><td class="num">0</td><td class="num">0%</td><td class="num">1,458</td></tr>
-      <tr><td>USTC-TFC2016</td><td class="num">6,662</td><td class="num">5,605</td><td class="num">84.1%</td><td class="num">1,057</td></tr>
-      <tr><td>CICIoT2022</td><td class="num">1,951</td><td class="num">1,571</td><td class="num">80.5%</td><td class="num">380</td></tr>
-      <tr><td>CrossPlatform-Android</td><td class="num">4,656</td><td class="num">3,733</td><td class="num">80.2%</td><td class="num">923</td></tr>
-      <tr><td>CrossPlatform-iOS</td><td class="num">4,205</td><td class="num">3,396</td><td class="num">80.8%</td><td class="num">809</td></tr>
-    </tbody>
-  </table>
-  <p class="note">250,072 flows audited. Re-scoring the model on the clean subsets costs 4.4 points of macro-F1 on VPN, 2.8 on USTC and 1.4 on CIoT. Both numbers are reported.</p>
+  <h2>What it returns</h2>
+  <p>Three tiers, 18 labels, plus an unknown. Security appliances: VPN gateways (wireguard, openvpn, stunnel), a web application firewall, NDR sensors, a bastion host, an internet behaviour management proxy. Endpoint agents: Windows Defender, ClamAV on two platforms, Velociraptor on two platforms, osquery, Wazuh. Common software: browser HTTP, SSH, FTP.</p>
+  <p>When a flow does not resemble any of them, the gate rejects it instead of guessing. All 18 unknown-product bins in the acceptance set are rejected at a fixed threshold of 0.1041, stable from q = 0.64 to q = 0.75. A new product can be added by registering three sub-prototypes, without retraining.</p>
 
   <h2>Install and run</h2>
 <pre><code>git clone https://github.com/lupingQAQ/gdnet
@@ -103,11 +91,11 @@ python -m gdnet.cli serve --weights weights --port 8080</code></pre>
   <p>Inference needs a CUDA device. The Gated DeltaNet backbone uses Triton kernels, so there is no CPU path, and that is a deliberate decision rather than an omission.</p>
 
   <h2>Limits, stated up front</h2>
-  <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. The audit detects exact duplicates only, not near-duplicates or label errors. Training code is not released; checkpoints, prototypes, threshold and the evaluation script are.</p>
+  <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. Training code is not released; checkpoints, prototypes, threshold and the evaluation script are.</p>
 
   <h2>Cite</h2>
 <pre><code>@misc{gdnet2026,
-  title  = {GDNet: An Intranet Traffic Detection Model for Security Product Identification from the First Five Packets of a Flow},
+  title  = {GDNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning},
   author = {Luping QAQ},
   year   = {2026},
   note   = {https://github.com/lupingQAQ/gdnet},
