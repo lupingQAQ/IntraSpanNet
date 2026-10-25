@@ -23,6 +23,8 @@ pip install flash-linear-attention
 pip install -e .
 ```
 
+PyPI 上的 0.1.0 wheel 早于 `load_backbone` 加入，克隆下来的源码始终是当前 API。用 pip 装过 0.1.0 又需要这个函数时，改从克隆目录安装。
+
 GDN 骨干走 Triton 内核，训练必须有 CUDA GPU。单臂 2.86M 参数，显存瓶颈不在参数量，而在 1601 个 token 的序列长度。建议从 batch 32、bf16 自动混合精度起步，再往上加。
 
 ## 2. 数据契约
