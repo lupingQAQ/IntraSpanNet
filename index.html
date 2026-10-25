@@ -83,18 +83,18 @@
 
   <h2>Install and run</h2>
 <pre><code>git clone https://github.com/lupingQAQ/quietspan
-cd gdnet
+cd quietspan
 pip install -r requirements.txt
 
-python -m gdnet.cli classify --pcap capture.pcapng --weights weights
-python -m gdnet.cli serve --weights weights --port 8080</code></pre>
+python -m quietspan.cli classify --pcap capture.pcapng --weights weights
+python -m quietspan.cli serve --weights weights --port 8080</code></pre>
   <p>Inference needs a CUDA device. The Gated DeltaNet backbone uses Triton kernels, so there is no CPU path, and that is a deliberate decision rather than an omission.</p>
 
   <h2>Limits, stated up front</h2>
   <p>The split is flow-level with one held-out session per class, so the absolute figures describe those sessions rather than a new organisation. One capture environment was used. The label set is closed at 18 products. Training code is not released; checkpoints, prototypes, threshold and the evaluation script are.</p>
 
   <h2>Cite</h2>
-<pre><code>@misc{gdnet2026,
+<pre><code>@misc{quietspan2026,
   title  = {QuietSpan: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning},
   author = {Luping QAQ},
   year   = {2026},
