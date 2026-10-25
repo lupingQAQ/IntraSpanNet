@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "intraspannet"
-version = "0.1.0"
+version = "0.1.1"
 description = "Byte-level traffic classification for security product discovery"
 readme = "README.md"
 requires-python = ">=3.10"

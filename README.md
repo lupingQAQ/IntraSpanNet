@@ -79,6 +79,8 @@ Download the weights from Hugging Face:
 huggingface-cli download luping123/IntraSpanNet --local-dir weights/intraspannet
 ```
 
+`pip install intraspannet` installs the same code from PyPI if you would rather not clone; the weights still come from Hugging Face.
+
 Classify a capture:
 
 ```bash

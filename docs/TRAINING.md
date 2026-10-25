@@ -27,7 +27,7 @@ pip install flash-linear-attention
 pip install -e .
 ```
 
-The 0.1.0 wheel on PyPI was uploaded before `load_backbone` was added. The clone below always has the current API; if you installed from PyPI and want that helper, work from the clone instead.
+The 0.1.1 wheel on PyPI carries this API. `pip install "intraspannet[train]"` also pulls scikit-learn, which the KMeans sub-prototypes need when `k > 1`.
 
 The GDN backbone calls Triton kernels, so training needs a CUDA GPU. The
 released ensemble is 2.86 M parameters per arm; the memory ceiling comes from the

@@ -79,6 +79,8 @@ pip install -e .
 huggingface-cli download luping123/IntraSpanNet --local-dir weights/intraspannet
 ```
 
+不想克隆仓库的话，`pip install intraspannet` 能从 PyPI 装同一份代码，权重仍从 Hugging Face 下载。
+
 分类一个抓包文件：
 
 ```bash
