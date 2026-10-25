@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GDNet - intranet traffic detection for security product identification</title>
-<meta name="description" content="GDNet is an intranet traffic detection model that runs beside a packet probe and identifies 18 security appliances, endpoint agents, and common software products from the first five packets of a flow, without active scanning.">
-<meta property="og:title" content="GDNet - intranet traffic detection for security product identification">
+<title>QuietSpan - passive intranet asset discovery from five packets, without scanning</title>
+<meta name="description" content="QuietSpan is an intranet traffic detection model that runs beside a packet probe and identifies 18 security appliances, endpoint agents, and common software products from the first five packets of a flow, without active scanning.">
+<meta property="og:title" content="QuietSpan - intranet traffic detection for security product identification">
 <meta property="og:description" content="Intranet traffic detection model, 2.86M parameters per arm, 0.8787 product accuracy on a 503-flow test split, explicit unknown class. Open weights, Apache-2.0.">
 <meta property="og:type" content="article">
 <style>
@@ -56,18 +56,18 @@
 <body>
 <div class="wrap">
 
-  <h1>GDNet: passive intranet asset discovery from five packets, without scanning</h1>
-  <p class="sub">A traffic probe already sees every host. GDNet names what produced each flow: a security appliance, an endpoint agent, or a common software. 2.86M parameters per arm, explicit unknown class, open weights.</p>
+  <h1>QuietSpan: passive intranet asset discovery from five packets, without scanning</h1>
+  <p class="sub">A traffic probe already sees every host. QuietSpan names what produced each flow: a security appliance, an endpoint agent, or a common software. 2.86M parameters per arm, explicit unknown class, open weights.</p>
 
   <div class="links">
-    <a class="btn primary" href="https://github.com/lupingQAQ/gdnet/blob/main/paper/GDNet.pdf">Read the paper (PDF)</a>
-    <a class="btn" href="https://github.com/lupingQAQ/gdnet">Code</a>
-    <a class="btn" href="https://huggingface.co/luping123/gdnet">Weights</a>
-    <a class="btn" href="https://github.com/lupingQAQ/gdnet/releases/tag/v0.1.0">Release v0.1.0</a>
+    <a class="btn primary" href="https://github.com/lupingQAQ/quietspan/blob/main/paper/QuietSpan.pdf">Read the paper (PDF)</a>
+    <a class="btn" href="https://github.com/lupingQAQ/quietspan">Code</a>
+    <a class="btn" href="https://huggingface.co/luping123/quietspan">Weights</a>
+    <a class="btn" href="https://github.com/lupingQAQ/quietspan/releases/tag/v0.1.0">Release v0.1.0</a>
   </div>
 
   <h2>What it does</h2>
-  <p>Asset inventories list what was installed; traffic shows what is running. GDNet reads the first five packets of a flow, zeroes the IPv4 addresses, and assigns the flow to one of 18 security products and services, or returns <code>unknown</code> when the prototype distance exceeds a calibrated threshold.</p>
+  <p>Asset inventories list what was installed; traffic shows what is running. QuietSpan reads the first five packets of a flow, zeroes the IPv4 addresses, and assigns the flow to one of 18 security products and services, or returns <code>unknown</code> when the prototype distance exceeds a calibrated threshold.</p>
   <p>The label set covers antivirus agents, endpoint detection and response, VPN endpoints, a web application firewall, an NDR sensor, a bastion host, an internet behaviour management proxy, a browser, and remote administration. Ports and protocol rules do not separate these classes.</p>
 
   <div class="grid">
@@ -82,7 +82,7 @@
   <p>When a flow does not resemble any of them, the gate rejects it instead of guessing. All 18 unknown-product bins in the acceptance set are rejected at a fixed threshold of 0.1041, stable from q = 0.64 to q = 0.75. A new product can be added by registering three sub-prototypes, without retraining.</p>
 
   <h2>Install and run</h2>
-<pre><code>git clone https://github.com/lupingQAQ/gdnet
+<pre><code>git clone https://github.com/lupingQAQ/quietspan
 cd gdnet
 pip install -r requirements.txt
 
@@ -95,11 +95,11 @@ python -m gdnet.cli serve --weights weights --port 8080</code></pre>
 
   <h2>Cite</h2>
 <pre><code>@misc{gdnet2026,
-  title  = {GDNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning},
+  title  = {QuietSpan: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning},
   author = {Luping QAQ},
   year   = {2026},
-  note   = {https://github.com/lupingQAQ/gdnet},
-  url    = {https://github.com/lupingQAQ/gdnet}
+  note   = {https://github.com/lupingQAQ/quietspan},
+  url    = {https://github.com/lupingQAQ/quietspan}
 }</code></pre>
 
   <footer>
