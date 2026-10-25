@@ -167,7 +167,7 @@ The labelled set contains 40,283 flows over 18 classes captured on laboratory ho
 | Stage 3 | REINFORCE, 300 epochs |
 | Reference stack | Python 3.12, PyTorch 2.14 |
 
-The training code is not in the release because it assumes the laboratory data layout of 40,283 flows and would require cleanup before another group could execute it, whereas the released checkpoints, 54 prototype rows, threshold of 0.1041, and evaluation script reproduce the test-half numbers directly [28], [29]. Model selection is confined to the 503-flow development half, so the 503-flow test half is scored once [14], [16].
+Stages 2 and 3 are released as a documented API: `SFTConfig`, `compute_sft_loss`, `RLConfig`, `compute_rl_loss`, a step driver, and a warm-start helper that adapts to a changed label set, together with two runnable examples and a guide, so another group can continue training on its own captures. Stage 1 is not released because it assumes the laboratory data layout of 40,283 flows. The released checkpoints, 54 prototype rows, threshold of 0.1041, and evaluation script reproduce the test-half numbers directly [28], [29]. Model selection is confined to the 503-flow development half, so the 503-flow test half is scored once [14], [16].
 
 Training follows three stages: the contrastive stage optimises NT-Xent over 33,184 training-only flows [23], fine-tuning adds a domain-adversarial term [24] under AdamW [26] with defaults inherited from Adam [27], and the last stage applies REINFORCE to three rewards, namely correct product, correct type, and honest rejection [25].
 
