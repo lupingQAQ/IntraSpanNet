@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GDNet - naming security products from the first five packets of a flow</title>
-<meta name="description" content="GDNet identifies 18 security products and services from the first five packets of a network flow, rejects unknown products with a calibrated prototype distance, and reports an exact byte-level audit of six public traffic benchmarks.">
-<meta property="og:title" content="GDNet - naming security products from network traffic">
-<meta property="og:description" content="Byte-level classifier, 2.86M parameters per arm, 0.8787 product accuracy on a 503-flow test split, explicit unknown class. Open weights, Apache-2.0.">
+<title>GDNet - intranet traffic detection for security product identification</title>
+<meta name="description" content="GDNet is an intranet traffic detection model that identifies 18 security products and services from the first five packets of a network flow, rejects unknown products with a calibrated prototype distance, and reports an exact byte-level audit of six public traffic benchmarks.">
+<meta property="og:title" content="GDNet - intranet traffic detection for security product identification">
+<meta property="og:description" content="Intranet traffic detection model, 2.86M parameters per arm, 0.8787 product accuracy on a 503-flow test split, explicit unknown class. Open weights, Apache-2.0.">
 <meta property="og:type" content="article">
 <style>
   :root {
@@ -56,8 +56,8 @@
 <body>
 <div class="wrap">
 
-  <h1>GDNet: naming security products from the first five packets of a flow</h1>
-  <p class="sub">Byte-level classifier, 2.86M parameters per arm, explicit unknown class, open weights.</p>
+  <h1>GDNet: an intranet traffic detection model for security product identification</h1>
+  <p class="sub">From the first five packets of a flow. 2.86M parameters per arm, explicit unknown class, open weights.</p>
 
   <div class="links">
     <a class="btn primary" href="https://github.com/lupingQAQ/gdnet/blob/main/paper/GDNet.pdf">Read the paper (PDF)</a>
@@ -107,7 +107,7 @@ python -m gdnet.cli serve --weights weights --port 8080</code></pre>
 
   <h2>Cite</h2>
 <pre><code>@misc{gdnet2026,
-  title  = {GDNet: Naming Security Products from the First Five Packets of a Flow},
+  title  = {GDNet: An Intranet Traffic Detection Model for Security Product Identification from the First Five Packets of a Flow},
   author = {Luping QAQ},
   year   = {2026},
   note   = {https://github.com/lupingQAQ/gdnet},
