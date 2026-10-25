@@ -42,7 +42,7 @@ from intraspannet.train import SFTConfig, Trainer, load_backbone
 
 def read_manifest(path: str) -> list[tuple[str, str]]:
     rows: list[tuple[str, str]] = []
-    with open(path, encoding="utf-8") as fh:
+    with open(path, encoding="utf-8-sig") as fh:
         for lineno, line in enumerate(fh, 1):
             line = line.strip()
             if not line or line.startswith("#"):

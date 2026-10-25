@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "intraspannet"
-version = "0.1.1"
+version = "0.2.0"
 description = "Byte-level traffic classification for security product discovery"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,10 +21,10 @@ dependencies = [
   "numpy>=1.26",
   "torch>=2.4",
   "dpkt>=1.9",
-  "flash-linear-attention>=0.3",
 ]
 
 [project.optional-dependencies]
+gpu = ["flash-linear-attention>=0.3"]
 space = ["gradio>=5.0"]
 train = ["scikit-learn>=1.3"]
 dev = ["pytest>=8.0", "ruff>=0.6"]

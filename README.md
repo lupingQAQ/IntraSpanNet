@@ -58,28 +58,27 @@ The test split is a flow-level half of the validation set, not a session-level h
 
 Requirements:
 
-- Linux or Windows with an NVIDIA GPU and a working CUDA driver.
 - Python 3.10 or newer.
-- PyTorch built for your CUDA version.
-- `flash-linear-attention` and its dependencies.
+- PyTorch. A CUDA build plus `flash-linear-attention` is the fast path; a CPU-only install also works.
 
-CPU inference is not supported in v0.1.0. The GDN backbone uses Triton kernels and requires CUDA.
+CPU works through a plain PyTorch port of the GDN block: about 2 s per flow per arm, so the four-arm ensemble costs roughly 10 s per flow. The Triton kernel on a GPU is roughly three orders of magnitude faster and is the deployment path. `scripts/verify_cpu_backend.py` checks the CPU port against captures you have labels for and prints a hit rate.
 
 ```bash
 git clone https://github.com/lupingQAQ/IntraSpanNet.git
 cd IntraSpanNet
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e .            # CPU works out of the box
+pip install -e ".[gpu]"     # adds flash-linear-attention for the Triton path
 ```
+
+`pip install intraspannet` does the same from PyPI; the weights still come from Hugging Face.
 
 Download the weights from Hugging Face:
 
 ```bash
 huggingface-cli download luping123/IntraSpanNet --local-dir weights/intraspannet
 ```
-
-`pip install intraspannet` installs the same code from PyPI if you would rather not clone; the weights still come from Hugging Face.
 
 Classify a capture:
 
@@ -89,6 +88,8 @@ python -m intraspannet.cli classify \
   --weights-dir weights/intraspannet \
   --json results.json
 ```
+
+Add `--device cpu` to force the CPU path, and `--arms a_s0 --gate a_s0` for a single arm when you only want to see the output quickly.
 
 The command prints a table and a summary. `--json` writes one record per flow.
 
@@ -226,7 +227,7 @@ The report also includes a leakage audit. Five of the six public benchmark split
 - The timing-rescue rule used in the 9/10 acceptance result is not included in v0.1.0. The released ensemble alone reproduces the 8/10 raw result.
 - Mobile and IoT benchmarks are out of scope. The target scope is PCs, servers, and internal network devices.
 - The model was trained on lab traffic. Performance on production networks with different software versions, proxies, or NAT configurations is unknown.
-- CPU inference is not supported.
+- CPU inference runs through a PyTorch port at roughly 2 s per flow per arm; it is for inspection, not for a live probe.
 - The distilled student is included for experiments. It is 5.6 percentage points below the ensemble and is not the recommended deployment.
 
 ## Data and privacy

@@ -39,13 +39,14 @@ class ByteEncoder(nn.Module):
         d_state: int = 16,
         dropout: float = 0.1,
         seq_len: int = 1600,
+        backend: str = "auto",
     ):
         super().__init__()
         self.seq_len = seq_len
         self.embed = ByteEmbed(vocab_size=256, embed_dim=d_model)
         self.cls_token = nn.Parameter(torch.randn(1, 1, d_model))
         self.pos_embed = nn.Parameter(torch.randn(1, seq_len + 1, d_model))
-        self.encoder = NetMambaEncoder("gdn", d_model, num_layers, d_state, dropout)
+        self.encoder = NetMambaEncoder("gdn", d_model, num_layers, d_state, dropout, backend=backend)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         b = x.shape[0]
@@ -70,9 +71,10 @@ class DualHeadClassifier(nn.Module):
         d_state: int = 16,
         mlp_hidden: int = 512,
         dropout: float = 0.1,
+        backend: str = "auto",
     ):
         super().__init__()
-        self.encoder = ByteEncoder(d_model, num_layers, d_state, dropout)
+        self.encoder = ByteEncoder(d_model, num_layers, d_state, dropout, backend=backend)
 
         def head(n_out: int, hidden: int = mlp_hidden) -> nn.Sequential:
             return nn.Sequential(

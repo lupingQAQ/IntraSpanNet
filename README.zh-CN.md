@@ -58,28 +58,27 @@ test 集为验证集的流级半折，不是会话级留出。每个产品类只
 
 环境要求：
 
-- 带 CUDA 驱动的 NVIDIA GPU，Linux 或 Windows。
 - Python 3.10 及以上。
-- 与 CUDA 版本匹配的 PyTorch。
-- `flash-linear-attention` 及其依赖。
+- PyTorch。带 CUDA 与 `flash-linear-attention` 是快路径；纯 CPU 安装也能跑。
 
-v0.1.0 不支持 CPU 推理。GDN 骨干使用 Triton 内核，必须使用 CUDA。
+CPU 走一份纯 PyTorch 的 GDN 移植，单臂约 2 秒一条流，四臂集成约 10 秒一条流。GPU 上的 Triton 内核快三个数量级，那才是部署形态。`scripts/verify_cpu_backend.py` 可以拿你自己有标签的抓包验证这份 CPU 移植，直接给出命中率。
 
 ```bash
 git clone https://github.com/lupingQAQ/IntraSpanNet.git
 cd IntraSpanNet
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e .            # 默认即可在 CPU 上跑
+pip install -e ".[gpu]"     # 加上 flash-linear-attention 走 Triton 快路径
 ```
+
+不想克隆仓库的话，`pip install intraspannet` 能从 PyPI 装同一份代码，权重仍从 Hugging Face 下载。
 
 下载权重：
 
 ```bash
 huggingface-cli download luping123/IntraSpanNet --local-dir weights/intraspannet
 ```
-
-不想克隆仓库的话，`pip install intraspannet` 能从 PyPI 装同一份代码，权重仍从 Hugging Face 下载。
 
 分类一个抓包文件：
 
@@ -89,6 +88,8 @@ python -m intraspannet.cli classify \
   --weights-dir weights/intraspannet \
   --json results.json
 ```
+
+加 `--device cpu` 强制走 CPU；只想快速看一眼输出，再加 `--arms a_s0 --gate a_s0` 用单臂。
 
 命令会打印每条流的结果与汇总。`--json` 输出完整记录。
 
@@ -204,7 +205,7 @@ python examples/train_rl.py --manifest examples/manifest.example.jsonl \
 - 9/10 验收结果中的时序救援规则未包含在 v0.1.0。发布集成单独复现的是 8/10。
 - 移动端与 IoT 基准不在目标范围内。目标范围为 PC、服务器与内网设备。
 - 模型在实验环境流量上训练。生产网络中软件版本、代理、NAT 配置不同，效果未知。
-- 不支持 CPU 推理。
+- CPU 推理走 PyTorch 移植，单臂约 2 秒一条流，用于排查，不适合挂到探针上实时跑。
 - 蒸馏学生模型仅用于实验，比集成低 5.6 个百分点，不作为推荐部署形态。
 
 ## 数据与隐私

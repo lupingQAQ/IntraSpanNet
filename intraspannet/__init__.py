@@ -3,5 +3,5 @@
 from .inference import Ensemble
 from .labels import PRODUCTS, describe
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __all__ = ["Ensemble", "PRODUCTS", "describe", "__version__"]

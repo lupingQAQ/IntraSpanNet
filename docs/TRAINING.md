@@ -24,10 +24,12 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 pip install flash-linear-attention
-pip install -e .
+pip install -e ".[gpu,train]"
 ```
 
-The 0.1.1 wheel on PyPI carries this API. `pip install "intraspannet[train]"` also pulls scikit-learn, which the KMeans sub-prototypes need when `k > 1`.
+Training needs the Triton path: the CPU backend is for inference. `pip install "intraspannet[train]"` alone installs the CPU path plus scikit-learn.
+
+The 0.2.0 wheel on PyPI carries this API. `pip install "intraspannet[train]"` also pulls scikit-learn, which the KMeans sub-prototypes need when `k > 1`.
 
 The GDN backbone calls Triton kernels, so training needs a CUDA GPU. The
 released ensemble is 2.86 M parameters per arm; the memory ceiling comes from the

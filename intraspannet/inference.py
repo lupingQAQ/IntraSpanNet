@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import warnings
 from dataclasses import dataclass
 from typing import Iterable, Sequence
 
@@ -57,6 +58,7 @@ def load_arm(weights_dir: str, name: str, device: torch.device) -> Arm:
         num_types=10,
         num_tiers=3,
         num_malicious=11,
+        backend="cpu" if device.type == "cpu" else "auto",
     )
     missing, unexpected = model.load_state_dict(ckpt["model"], strict=False)
     if any("software_head" in key for key in missing):
@@ -81,7 +83,7 @@ class Ensemble:
         threshold: float = DEFAULT_THRESHOLD,
         device: str | None = None,
         batch_size: int = DEFAULT_BATCH,
-        allow_cpu: bool = False,
+        allow_cpu: bool = True,
     ):
         self.weights_dir = weights_dir
         self.arms = tuple(arms)
@@ -94,9 +96,16 @@ class Ensemble:
         self.device = torch.device(device)
         if self.device.type == "cpu" and not allow_cpu:
             raise RuntimeError(
-                "IntraSpanNet uses Triton GDN kernels and requires a CUDA GPU. "
-                "CPU inference is not supported in v0.1.0. "
-                "Pass allow_cpu=True only if your flash-linear-attention build has a CPU path."
+                "IntraSpanNet is running on CPU. The Triton GDN kernels need a CUDA GPU, "
+                "so the PyTorch reference path is used instead; it is correct but slow. "
+                "Pass allow_cpu=True to accept that."
+            )
+        if self.device.type == "cpu":
+            warnings.warn(
+                "CPU device: using the PyTorch reference GDN path. Plan for a few seconds per flow; "
+                "a CUDA device with flash-linear-attention is the deployment path.",
+                RuntimeWarning,
+                stacklevel=2,
             )
 
         names = sorted(set(self.arms) | set(self.gate))

@@ -20,10 +20,12 @@ python -m venv .venv
 source .venv/bin/activate          # Windows 用 .venv\Scripts\activate
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 pip install flash-linear-attention
-pip install -e .
+pip install -e ".[gpu,train]"
 ```
 
-PyPI 上的 0.1.1 wheel 已包含这套接口。`pip install "intraspannet[train]"` 会一并装上 scikit-learn，`k > 1` 的 KMeans 子原型需要它。
+训练要走 Triton 路径，CPU 后端只用于推理。只装 `pip install "intraspannet[train]"` 得到的是 CPU 路径加 scikit-learn。
+
+PyPI 上的 0.2.0 wheel 已包含这套接口。`pip install "intraspannet[train]"` 会一并装上 scikit-learn，`k > 1` 的 KMeans 子原型需要它。
 
 GDN 骨干走 Triton 内核，训练必须有 CUDA GPU。单臂 2.86M 参数，显存瓶颈不在参数量，而在 1601 个 token 的序列长度。建议从 batch 32、bf16 自动混合精度起步，再往上加。
 

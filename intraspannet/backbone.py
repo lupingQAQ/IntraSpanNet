@@ -14,6 +14,8 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 
+from ._gdn_cpu import GatedDeltaNetCPU
+
 try:
     from fla.layers.gated_deltanet import GatedDeltaNet
 except ImportError:  # pragma: no cover - exercised only without the dependency
@@ -48,13 +50,9 @@ class GDNBlock(nn.Module):
         head_dim: int = 64,
         expand_v: float = 2.0,
         conv_size: int = 4,
+        backend: str = "auto",
     ):
         super().__init__()
-        if GatedDeltaNet is None:
-            raise ImportError(
-                "IntraSpanNet requires flash-linear-attention. "
-                "Install it with: pip install flash-linear-attention"
-            )
         key_dim_target = 0.75 * d_model
         num_heads = int(round(key_dim_target / head_dim))
         if num_heads < 1 or abs(num_heads * head_dim - key_dim_target) > 1e-6:
@@ -62,21 +60,44 @@ class GDNBlock(nn.Module):
                 f"d_model={d_model} is incompatible with head_dim={head_dim}: "
                 f"num_heads * head_dim must equal 0.75 * d_model"
             )
+        if backend == "auto":
+            backend = "fla" if GatedDeltaNet is not None else "cpu"
+        if backend == "fla" and GatedDeltaNet is None:
+            raise ImportError(
+                "backend='fla' needs flash-linear-attention. "
+                "Install it with: pip install flash-linear-attention, or use backend='cpu'."
+            )
+        if backend not in ("fla", "cpu"):
+            raise ValueError(f"unknown backend {backend!r}; expected 'auto', 'fla' or 'cpu'")
+
+        self.backend = backend
         self.norm = nn.LayerNorm(d_model)
-        self.gdn = GatedDeltaNet(
-            hidden_size=d_model,
-            expand_v=expand_v,
-            head_dim=head_dim,
-            num_heads=num_heads,
-            mode="chunk",
-            use_gate=True,
-            use_short_conv=True,
-            conv_size=conv_size,
-            conv_bias=False,
-        )
+        if backend == "fla":
+            self.gdn = GatedDeltaNet(
+                hidden_size=d_model,
+                expand_v=expand_v,
+                head_dim=head_dim,
+                num_heads=num_heads,
+                mode="chunk",
+                use_gate=True,
+                use_short_conv=True,
+                conv_size=conv_size,
+                conv_bias=False,
+            )
+        else:
+            self.gdn = GatedDeltaNetCPU(
+                hidden_size=d_model,
+                head_dim=head_dim,
+                num_heads=num_heads,
+                expand_v=expand_v,
+                conv_size=conv_size,
+            )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return x + self.gdn(self.norm(x))[0]
+        out = self.gdn(self.norm(x))
+        if isinstance(out, tuple):
+            out = out[0]
+        return x + out
 
 
 class NetMambaEncoder(nn.Module):
@@ -89,12 +110,15 @@ class NetMambaEncoder(nn.Module):
         num_layers: int = 4,
         d_state: int = 16,
         dropout: float = 0.1,
+        backend: str = "auto",
     ):
         super().__init__()
         if baseblock != "gdn":
             raise ValueError(f"this release only supports baseblock='gdn', got {baseblock!r}")
         self.norm = nn.LayerNorm(d_model)
-        self.blocks = nn.ModuleList([GDNBlock(d_model) for _ in range(num_layers)])
+        self.blocks = nn.ModuleList(
+            [GDNBlock(d_model, backend=backend) for _ in range(num_layers)]
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         for block in self.blocks:

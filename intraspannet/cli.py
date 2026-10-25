@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import numpy as np
 
+from . import __version__
 from .inference import DEFAULT_THRESHOLD, Ensemble
 from .preprocess import FLOW_LEN
 
@@ -39,12 +40,23 @@ def _summary(rows: list[dict]) -> None:
         print(f"  {name}: {count}")
 
 
+def _arms_kwargs(args: argparse.Namespace) -> dict:
+    """Optional arm override, useful for a quick single-arm CPU run."""
+    kw = {}
+    if getattr(args, "arms", ""):
+        kw["arms"] = tuple(a.strip() for a in args.arms.split(",") if a.strip())
+    if getattr(args, "gate", ""):
+        kw["gate"] = tuple(a.strip() for a in args.gate.split(",") if a.strip())
+    return kw
+
+
 def cmd_classify(args: argparse.Namespace) -> int:
     engine = Ensemble.from_config(
         args.weights_dir,
         threshold=args.threshold,
         device=args.device,
         batch_size=args.batch,
+        **_arms_kwargs(args),
     )
     if args.flow_dir:
         rows = engine.classify_flow_dir(args.flow_dir, topk=args.topk)
@@ -79,6 +91,7 @@ def cmd_serve(args: argparse.Namespace) -> int:
         threshold=args.threshold,
         device=args.device,
         batch_size=args.batch,
+        **_arms_kwargs(args),
     )
 
     class Handler(BaseHTTPRequestHandler):
@@ -111,20 +124,22 @@ def cmd_serve(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="intraspannet", description="IntraSpanNet traffic classifier")
-    parser.add_argument("--version", action="version", version="intraspannet 0.1.0")
+    parser.add_argument("--version", action="version", version=f"intraspannet {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     classify = sub.add_parser("classify", help="classify pcap files or 1600-byte flow bins")
     classify.add_argument("--weights-dir", required=True, help="directory with stage3_*.pth and prototypes")
     classify.add_argument("--pcap", nargs="+", default=[], help="pcap/pcapng files or glob patterns")
     classify.add_argument("--flow-dir", default="", help="directory containing flow_*.bin")
-    classify.add_argument("--device", default=None, help="cuda or cpu (cpu is not supported in v0.1.0)")
+    classify.add_argument("--device", default=None, help="cuda or cpu; cpu uses the slower PyTorch reference path")
     classify.add_argument("--batch", type=int, default=64)
     classify.add_argument("--min-pkts", type=int, default=1)
     classify.add_argument("--topk", type=int, default=3)
     classify.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
     classify.add_argument("--limit", type=int, default=50)
     classify.add_argument("--json", default="", help="write full results to this JSON file")
+    classify.add_argument("--arms", default="", help="comma-separated classifier arms, e.g. a_s0 (default: all four)")
+    classify.add_argument("--gate", default="", help="comma-separated gate arms, e.g. a_s0 (default: a_lda,b_lda)")
     classify.set_defaults(func=cmd_classify)
 
     serve = sub.add_parser("serve", help="HTTP service for FLW1 records")
@@ -134,11 +149,21 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--device", default=None)
     serve.add_argument("--batch", type=int, default=64)
     serve.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
+    serve.add_argument("--arms", default="")
+    serve.add_argument("--gate", default="")
     serve.set_defaults(func=cmd_serve)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Windows consoles default to a legacy code page that cannot encode the
+    # Chinese tier names, which would abort the table halfway through.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "classify" and not args.pcap and not args.flow_dir:
