@@ -4,5 +4,8 @@ numpy>=1.26
 dpkt>=1.9
 flash-linear-attention>=0.3
 
+# Further training. scikit-learn is only needed for k > 1 sub-prototypes:
+#   pip install -e ".[train]"
+
 # The Space extra is optional:
 # gradio>=5.0

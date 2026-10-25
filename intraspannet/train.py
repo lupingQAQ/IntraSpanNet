@@ -7,8 +7,9 @@ labels are shipped here and are stable API:
 
     * :class:`SFTConfig`            weights for every supervised term
     * :func:`compute_sft_loss`      multi-task supervised loss (stage 2)
-    * :func:`compute_rl_loss`       REINFORCE objective on three rewards (stage 3)
+    * :class:`compute_rl_loss`       REINFORCE objective on three rewards (stage 3)
     * :class:`Trainer`              minimal step driver for both stages
+    * :func:`load_backbone`         warm start from a released arm
 
 Both functions take a plain dict of tensors, so the caller keeps ownership of
 data loading. Nothing here reads a fixed directory layout.
@@ -16,6 +17,7 @@ data loading. Nothing here reads a fixed directory layout.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 
 import torch
@@ -29,6 +31,7 @@ __all__ = [
     "compute_sft_loss",
     "compute_rl_loss",
     "Trainer",
+    "load_backbone",
 ]
 
 
@@ -170,6 +173,54 @@ def compute_rl_loss(
         entropy = -(dist * log_dist).sum(-1).mean()
         loss = loss - cfg.entropy_bonus * entropy
     return {"total": loss, "reward": reward.mean()}
+
+
+def load_backbone(
+    checkpoint: str | os.PathLike | dict,
+    model: torch.nn.Module,
+    map_location: str = "cpu",
+) -> tuple[torch.nn.Module, dict]:
+    """Warm start ``model`` from a released arm.
+
+    A released checkpoint carries the 18-class product head. When the target
+    model has a different number of classes, the head parameters have a
+    different shape and ``load_state_dict`` would refuse the whole file. This
+    helper keeps every tensor whose shape matches and skips the rest, so the
+    encoder, the type/tier/malicious heads and the projection head are
+    restored while a resized product head stays at its initialisation.
+
+    ``checkpoint`` may be a path or an already-loaded checkpoint dict. The
+    released files store the state dict under ``"model"``; a bare state dict is
+    also accepted.
+
+    Returns ``(model, report)`` where ``report`` holds ``loaded`` (number of
+    tensors copied), ``skipped`` (keys dropped because of a shape or name
+    mismatch) and ``missing`` (model keys left at initialisation).
+    """
+    ckpt = (
+        torch.load(checkpoint, map_location=map_location, weights_only=False)
+        if isinstance(checkpoint, (str, os.PathLike))
+        else checkpoint
+    )
+    state = ckpt.get("model", ckpt) if isinstance(ckpt, dict) else ckpt
+
+    own = model.state_dict()
+    keep: dict[str, torch.Tensor] = {}
+    skipped: list[str] = []
+    for key, value in state.items():
+        if key in own and own[key].shape == value.shape:
+            keep[key] = value
+        else:
+            skipped.append(key)
+
+    missing, _ = model.load_state_dict(keep, strict=False)
+    report = {
+        "loaded": len(keep),
+        "skipped": skipped,
+        "missing": list(missing),
+        "classes": ckpt.get("classes") if isinstance(ckpt, dict) else None,
+    }
+    return model, report
 
 
 class Trainer:

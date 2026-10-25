@@ -86,6 +86,25 @@ def test_rl_loss_reward_range_and_grad():
     assert model.software_head.weight.grad is not None
 
 
+def test_load_backbone_keeps_shared_layers_and_skips_resized_head(tmp_path):
+    from intraspannet.train import load_backbone
+
+    src = StubClassifier(n_software=18)
+    dst = StubClassifier(n_software=5)
+    path = tmp_path / "stage3_src.pth"
+    torch.save({"model": src.state_dict(), "classes": list(range(18))}, path)
+
+    model, report = load_backbone(path, dst)
+
+    assert model is dst
+    assert report["loaded"] > 0
+    assert "software_head.weight" in report["skipped"]
+    assert "software_head.weight" in report["missing"]
+    assert torch.equal(dst.emb.weight, src.emb.weight)
+    assert torch.equal(dst.type_head.weight, src.type_head.weight)
+    assert not torch.equal(dst.software_head.weight, src.software_head.weight[:5])
+
+
 def test_trainer_updates_weights():
     from intraspannet.train import SFTConfig, Trainer
 

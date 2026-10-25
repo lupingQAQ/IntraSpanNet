@@ -1,5 +1,7 @@
 # IntraSpanNet
 
+**English** | [简体中文](README.zh-CN.md)
+
 Byte-level traffic classification for security product discovery.
 
 IntraSpanNet identifies security products and services from the first five packets of a network flow. It reports the product, its type and tier, and rejects flows that do not match any known product. The released model is a four-arm ensemble with 2.86M parameters per arm.
@@ -148,15 +150,62 @@ The four classifier arms share the same architecture and differ in pretraining r
 
 ## Training
 
+Three stages produced the released arms:
+
 | Stage | Data | Objective |
 |---|---|---|
 | 1. Contrastive pretraining | 33,184 training-only flows | NT-Xent / SimCLR |
 | 2. Multi-task SFT | Product, benchmark, and malicious training flows | Product, type, tier, malicious, domain-adversarial losses |
 | 3. RL fine-tuning | Training split with reward shaping | Correct product, correct type, honest rejection |
 
+Stages 2 and 3 are shipped as a stable API, so you can continue training on your own captures:
+
+| Item | What it does |
+|---|---|
+| `SFTConfig` | Loss weights for the supervised stage |
+| `compute_sft_loss` | Multi-task supervised loss, returns every term plus `total` |
+| `RLConfig` | Reward weights for the REINFORCE stage |
+| `compute_rl_loss` | REINFORCE objective with a running-mean baseline |
+| `Trainer` | One optimizer step per call, for either stage |
+| `load_backbone` | Warm start from a released arm, resizing the product head |
+
+```python
+import torch
+from intraspannet.model import DualHeadClassifier
+from intraspannet.train import SFTConfig, Trainer, load_backbone
+
+model = DualHeadClassifier(num_software=18)
+model, report = load_backbone("weights/intraspannet/stage3_a_s0.pth", model)
+model.cuda()
+
+cfg = SFTConfig(lda=1.0, hardneg=0.5)
+trainer = Trainer(model, torch.optim.AdamW(model.parameters(), lr=1e-4))
+
+batch = {
+    "x": flows.cuda(),                       # (B, 1600) int64
+    "y_software": y.cuda(),                  # index into labels.PRODUCTS
+    "y_type": y_type.cuda(),                 # from PRODUCT_TO_TYPE
+    "y_tier": y_tier.cuda(),                 # from PRODUCT_TO_TIER
+    "y_malicious": torch.zeros_like(y).cuda(),
+}
+stats = trainer.step_sft(batch, cfg, class_prior=prior.cuda())
+```
+
+Two runnable scripts, both driven by a JSONL manifest of captures and product labels:
+
+```bash
+python examples/train_sft.py --weights-dir weights/intraspannet \
+    --manifest examples/manifest.example.jsonl --epochs 5 --out runs/sft/arm.pth
+
+python examples/train_rl.py --manifest examples/manifest.example.jsonl \
+    --init runs/sft/arm.pth --epochs 2 --lr 1e-5 --out runs/rl/arm.pth
+```
+
+Full guide: [docs/TRAINING.md](docs/TRAINING.md). It covers the batch contract, every config field, prototype and threshold calibration, checkpoint export in the format the CLI reloads, and the failure modes worth knowing about.
+
 Training data comes from lab captures of 18 products and services, plus public benchmark training splits. The SSL pool excludes validation and holdout flows. The validation split is divided into dev and test halves at the flow level. Selection, threshold calibration, and ensemble choice use dev only.
 
-The model was trained on 4 x RTX 4090 GPUs. The released checkpoints are the final arms.
+The model was trained on 4 x RTX 4090 GPUs. The released checkpoints are the final arms. Stage 1 is not shipped because it depends on the lab capture layout; the released arms are the recommended starting point for any further training.
 
 ## Evaluation protocol
 
@@ -189,9 +238,11 @@ Code and weights: Apache-2.0. Documentation: CC-BY-4.0. See [LICENSE](LICENSE) a
 ## Citation
 
 ```bibtex
-@software{intraspannet2026,
-  title  = {IntraSpanNet: an intranet traffic detection model for security product identification},
+@software{li2026intraspannet,
+  author = {Li, Chenhe},
+  title  = {IntraSpanNet: Identifying security appliances, endpoint agents and common software from intranet flows},
   year   = {2026},
+  doi    = {10.5281/zenodo.23643146},
   url    = {https://github.com/lupingQAQ/IntraSpanNet},
   note   = {Model: https://huggingface.co/luping123/IntraSpanNet}
 }

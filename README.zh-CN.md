@@ -1,11 +1,14 @@
 # IntraSpanNet
 
+[English](README.md) | **简体中文**
+
 面向安全产品发现的字节级流量分类模型。
 
 IntraSpanNet 从一条流的前 5 个包识别安全产品与服务，输出产品、类型、大类，并对不在已知类别中的流量给出未知告警。发布版本为四臂集成，单臂 2.86M 参数。
 
 - 模型：[Hugging Face 上的 intraspannet](https://huggingface.co/luping123/IntraSpanNet)
-- 论文：[PDF](paper/intraspannet.pdf)
+- 论文：[中文 PDF](paper/IntraSpanNet-zh.pdf)、[英文 PDF](paper/IntraSpanNet.pdf)
+- 项目主页：https://lupingQAQ.github.io/IntraSpanNet/
 - 演示：暂未部署。Space 代码在 `space/`，需要 CUDA GPU。
 - 技术报告：[docs/RESULTS.md](docs/RESULTS.md)
 - 基准审计：[docs/BENCHMARK_AUDIT.md](docs/BENCHMARK_AUDIT.md)
@@ -125,15 +128,62 @@ bytes (1600)
 
 ## 训练
 
+发布版本的四个臂由三个阶段产生：
+
 | 阶段 | 数据 | 目标 |
 |---|---|---|
 | 1. 对比预训练 | 33,184 条纯训练流 | NT-Xent / SimCLR |
 | 2. 多任务 SFT | 产品、基准、恶意训练流 | 产品、类型、大类、恶意、域对抗损失 |
 | 3. RL 微调 | 训练 split，奖励塑形 | 产品正确、类型正确、诚实拒识 |
 
+第 2、3 阶段以稳定 API 形式提供，可以在自己的抓包上继续训练：
+
+| 接口 | 作用 |
+|---|---|
+| `SFTConfig` | 监督阶段的各项损失权重 |
+| `compute_sft_loss` | 多任务监督损失，返回每个分项与 `total` |
+| `RLConfig` | REINFORCE 阶段的奖励权重 |
+| `compute_rl_loss` | 带滑动均值基线的 REINFORCE 目标 |
+| `Trainer` | 每次调用走一步优化，两个阶段通用 |
+| `load_backbone` | 从已发布臂热启动，自动适配改过尺寸的产品头 |
+
+```python
+import torch
+from intraspannet.model import DualHeadClassifier
+from intraspannet.train import SFTConfig, Trainer, load_backbone
+
+model = DualHeadClassifier(num_software=18)
+model, report = load_backbone("weights/intraspannet/stage3_a_s0.pth", model)
+model.cuda()
+
+cfg = SFTConfig(lda=1.0, hardneg=0.5)
+trainer = Trainer(model, torch.optim.AdamW(model.parameters(), lr=1e-4))
+
+batch = {
+    "x": flows.cuda(),                       # (B, 1600) int64
+    "y_software": y.cuda(),                  # labels.PRODUCTS 的下标
+    "y_type": y_type.cuda(),                 # 由 PRODUCT_TO_TYPE 得到
+    "y_tier": y_tier.cuda(),                 # 由 PRODUCT_TO_TIER 得到
+    "y_malicious": torch.zeros_like(y).cuda(),
+}
+stats = trainer.step_sft(batch, cfg, class_prior=prior.cuda())
+```
+
+两个可直接运行的脚本，输入是一份「抓包 + 产品标签」的 JSONL 清单：
+
+```bash
+python examples/train_sft.py --weights-dir weights/intraspannet \
+    --manifest examples/manifest.example.jsonl --epochs 5 --out runs/sft/arm.pth
+
+python examples/train_rl.py --manifest examples/manifest.example.jsonl \
+    --init runs/sft/arm.pth --epochs 2 --lr 1e-5 --out runs/rl/arm.pth
+```
+
+完整说明见 [docs/TRAINING.zh-CN.md](docs/TRAINING.zh-CN.md)：batch 契约、每个配置字段、原型与阈值校准、导出成 CLI 可重新加载的格式，以及几个容易踩的坑。
+
 训练数据来自 18 个产品与服务的实验环境抓包，以及公开基准训练 split。SSL 池不含验证集与留出集。验证集按流级拆分为 dev 与 test，选择、阈值校准与集成选择仅使用 dev。
 
-训练使用 4 张 RTX 4090。发布 checkpoint 为 最终六臂。
+训练使用 4 张 RTX 4090，发布 checkpoint 为最终四臂。第 1 阶段依赖实验环境的抓包目录结构，未包含在发布内容里；继续训练建议直接从已发布的臂起步。
 
 ## 评测协议
 
@@ -166,11 +216,13 @@ bytes (1600)
 ## 引用
 
 ```bibtex
-@software{intraspannet2026,
-  title  = {IntraSpanNet: Byte-level traffic classification for security product discovery},
+@software{li2026intraspannet,
+  author = {Li, Chenhe},
+  title  = {IntraSpanNet: 不主动扫描识别内网安全设备、终端安全产品与常用软件},
   year   = {2026},
+  doi    = {10.5281/zenodo.23643146},
   url    = {https://github.com/lupingQAQ/IntraSpanNet},
-  note   = {Model: https://huggingface.co/luping123/IntraSpanNet}
+  note   = {模型：https://huggingface.co/luping123/IntraSpanNet}
 }
 ```
 
