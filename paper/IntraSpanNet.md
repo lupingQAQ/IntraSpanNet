@@ -1,6 +1,6 @@
 # IntraSpanNet: Identifying Security Appliances, Endpoint Agents, and Common Software from Five-Packet Intranet Flows without Active Scanning
 
-luping, Independent Researcher
+Chenhe Li, Independent Researcher
 
 ## Abstract
 
