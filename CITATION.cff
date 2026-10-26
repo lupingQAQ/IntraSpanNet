@@ -1,13 +1,15 @@
 cff-version: 1.2.0
 message: "If you use this model, cite the software entry below."
-title: "IntraSpanNet: an intranet traffic detection model for security product identification"
+title: "IntraSpanNet: identifying security appliances, endpoint agents and common software from intranet flows"
 doi: 10.5281/zenodo.23643146
-version: 0.1.0
-date-released: 2026-10-24
+version: 0.2.0
+date-released: 2026-10-26
 license: Apache-2.0
 type: software
 authors:
-  - name: "IntraSpanNet contributors"
+  - family-names: "Li"
+    given-names: "Chenhe"
+    name: "Li, Chenhe"
 repository-code: "https://github.com/lupingQAQ/IntraSpanNet"
 url: "https://huggingface.co/luping123/IntraSpanNet"
 keywords:
