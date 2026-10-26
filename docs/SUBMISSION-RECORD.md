@@ -67,7 +67,7 @@ JournalX 稿件上传的白名单是 `rar|doc|zip`，`.docx` 不在其中，直�
 | `paper/IntraSpanNet-zh.pdf` | 重新排版，仍 6 页 | 2026-10-26 |
 | `paper/IntraSpanNet-zh.docx` | 重新生成 | 2026-10-26 |
 
-**Zenodo 预印本**（10.5281/zenodo.23643146）已用同一 DOI 原地更新：作者由 QAQ, Luping 更正为 Li, Chenhe，三个文件全部替换。没有新建版本，因此 DOI 与论文引用保持一致。
+**Zenodo 预印本**（10.5281/zenodo.23643146）已用同一 DOI 原地更新：三个文件全部替换；记录作者按最终署名方案设为 luping（论文正文内仍是李晨赫）。没有新建版本，因此 DOI 与论文引用保持一致。
 
 **注意**：期刊系统里那份 `IntraSpanNet-zh-doc.zip`（169.72 KB）是投稿时的版本，文本仍是旧表述。仓库里的 `.doc` 与 `.zip` 保留为该次投稿的快照，未覆盖；`.docx` 是新版。若编辑部来信要求说明，可解释为投稿后代码发布范围扩大，不涉及实验数据与结论。
 
