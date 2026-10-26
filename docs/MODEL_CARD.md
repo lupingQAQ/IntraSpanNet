@@ -29,6 +29,8 @@ IntraSpanNet names what produced a flow from its first five packets: a security 
 
 **Code and training guide:** [github.com/lupingQAQ/IntraSpanNet](https://github.com/lupingQAQ/IntraSpanNet) — [docs/TRAINING.md](https://github.com/lupingQAQ/IntraSpanNet/blob/main/docs/TRAINING.md)
 
+**Install:** `pip install intraspannet` runs on CPU; `pip install "intraspannet[gpu]"` adds the Triton kernel. Same weights either way.
+
 ## Model details
 
 - Architecture: ByteEmbed, four Gated DeltaNet blocks, four task heads.
@@ -87,7 +89,7 @@ The test split is a flow-level half of the validation set, not a session-level h
 
 - `stunnel` has zero recall in the acceptance demo (0/30).
 - Flow-level test split; session-level generalization is not measured.
-- CPU inference is not supported. The GDN backbone uses Triton kernels and requires CUDA.
+- CPU inference uses a plain PyTorch port of the GDN block: correct, but about two seconds per flow per arm, so it is for inspection rather than a live probe. `pip install "intraspannet[gpu]"` enables the Triton path.
 - The model was trained on lab traffic. Production performance with different software versions, proxies, or NAT is unknown.
 - The malicious head is a secondary output and is not calibrated for production alerting.
 
@@ -140,8 +142,8 @@ Stage 1, the contrastive pretraining on lab captures, is not included because it
 ## Citation
 
 ```bibtex
-@software{li2026intraspannet,
-  author = {Li, Chenhe},
+@software{luping2026intraspannet,
+  author = {luping},
   title  = {IntraSpanNet: Identifying security appliances, endpoint agents and common software from intranet flows},
   year   = {2026},
   doi    = {10.5281/zenodo.23643146},

@@ -7,9 +7,8 @@ date-released: 2026-10-26
 license: Apache-2.0
 type: software
 authors:
-  - family-names: "Li"
-    given-names: "Chenhe"
-    name: "Li, Chenhe"
+  - family-names: "luping"
+    name: "luping"
 repository-code: "https://github.com/lupingQAQ/IntraSpanNet"
 url: "https://huggingface.co/luping123/IntraSpanNet"
 keywords:

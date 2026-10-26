@@ -241,8 +241,8 @@ Code and weights: Apache-2.0. Documentation: CC-BY-4.0. See [LICENSE](LICENSE) a
 ## Citation
 
 ```bibtex
-@software{li2026intraspannet,
-  author = {Li, Chenhe},
+@software{luping2026intraspannet,
+  author = {luping},
   title  = {IntraSpanNet: Identifying security appliances, endpoint agents and common software from intranet flows},
   year   = {2026},
   doi    = {10.5281/zenodo.23643146},

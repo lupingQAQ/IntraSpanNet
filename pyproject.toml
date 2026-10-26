@@ -9,7 +9,7 @@ description = "Byte-level traffic classification for security product discovery"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "Chenhe Li" }]
+authors = [{ name = "luping" }]
 keywords = ["network-security", "traffic-classification", "open-set-recognition", "mamba", "gdn"]
 classifiers = [
   "Programming Language :: Python :: 3",

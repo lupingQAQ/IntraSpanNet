@@ -219,8 +219,8 @@ python examples/train_rl.py --manifest examples/manifest.example.jsonl \
 ## 引用
 
 ```bibtex
-@software{li2026intraspannet,
-  author = {Li, Chenhe},
+@software{luping2026intraspannet,
+  author = {luping},
   title  = {IntraSpanNet: 不主动扫描识别内网安全设备、终端安全产品与常用软件},
   year   = {2026},
   doi    = {10.5281/zenodo.23643146},
